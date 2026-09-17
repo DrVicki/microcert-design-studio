@@ -19,3 +19,13 @@ The rendered DOM contains twelve lesson cards and five live-application links, a
 ## Mobile preview
 
 A 390 × 844 Chromium capture confirmed the mobile header, MC monogram, menu trigger, live-Fieldbook action, responsive hero artwork, large editorial title, descriptive copy, and stacked primary/secondary actions fit without clipping or horizontal overflow. A second headless capture using a `#curriculum` fragment did not wait for script-rendered anchor placement and therefore was not used as visual evidence; curriculum responsiveness remains covered by the CSS breakpoint review and the successful browser-rendered desktop accordion test.
+
+## GitHub publication
+
+Commit `7628fe1` (`Add GitHub Pages course companion`) was pushed to `DrVicki/microcert-design-studio` on `main`. The GitHub API credential could push repository content but returned `403 Resource not accessible by integration` for Pages administration. Using the repository owner’s logged-in browser, GitHub Pages was configured to **Deploy from a branch** with branch **main** and folder **/docs**. GitHub confirmed that the site was being built from that source with HTTPS required on the default domain.
+
+A deterministic HTTP check reached `https://drvicki.github.io/microcert-design-studio/` on the third attempt with status 200 and the expected title, **Micro-Certification Fieldbook | Public Course Companion**.
+
+## Live-site verification
+
+The published address opened successfully in the repository owner’s browser with the expected title and complete visual design. The hero artwork, navigation, course promise, instructor welcome, four studio summaries, first studio’s lesson cards, Proposal Dossier map, static/live boundary, public sources, and final live-course call to action all rendered on the HTTPS GitHub Pages domain. A direct DOM-console audit is unsupported in My Browser, so the live page was validated through its rendered content and screenshot, while the equivalent local package had already passed DOM counts, image loading, link-target, accordion, and overflow checks.

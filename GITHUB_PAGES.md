@@ -18,17 +18,16 @@ GitHub Pages hosts only the public course companion: course purpose, instructor 
 
 No participant names, email addresses, progress, notebook entries, proposal content, or certificates are stored in the `/docs` package.
 
-## One-time GitHub setting
+## Active GitHub Pages setting
 
-The current GitHub integration can push repository files but received a `403 Resource not accessible by integration` response when reading Pages administration settings. The repository owner must complete this one-time configuration:
+GitHub Pages is enabled with the following branch-based configuration:
 
-1. Open **Repository Settings → Pages**.
-2. Under **Build and deployment**, choose **Deploy from a branch**.
-3. Select branch **`main`**.
-4. Select folder **`/docs`**.
-5. Save and wait for GitHub to publish the site.
+1. **Build and deployment:** Deploy from a branch
+2. **Branch:** `main`
+3. **Folder:** `/docs`
+4. **HTTPS:** Required on the default `github.io` domain
 
-This package intentionally does not add a GitHub Actions workflow. Branch-based `/docs` publishing avoids workflow-permission failures and does not require a build action.
+The site was published and verified at **https://drvicki.github.io/microcert-design-studio/**. This package intentionally does not add a GitHub Actions workflow. Branch-based `/docs` publishing avoids workflow-permission failures and does not require a build action. Future pushes to `main` that change `/docs` will trigger a Pages rebuild automatically.
 
 ## Validation
 
