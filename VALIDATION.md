@@ -126,3 +126,11 @@ A 390 × 844 capture of the protected course route confirmed that the registrati
 ## Final desktop visual review
 
 The 1440 × 1000 full-page administrator capture confirms that the authenticated dashboard has a complete navigation shell, clear masthead, four summary metrics, search control, empty-state roster, CSV action, and participant-data handling notice. No content is clipped or horizontally overflowing. The full public overview capture confirms that Dr. Bealman’s portrait, concise welcome message, quotation, and scanned signature form one coherent instructor profile, while the existing hero, module studios, evidence sources, and footer remain visually intact.
+
+## Personalized PDF cover enhancement
+
+A local-only completed learner state was prepared with participant **Alex Morgan** and a latest lesson completion timestamp of **September 20, 2026**. The Proposal Dossier reached its existing 12/12 ready state and exposed the formatted-PDF action without creating or modifying a database registration record.
+
+The participant-facing export generated `alex-morgan-microcert-proposal-dossier.pdf` as a valid 15-page US Letter document. Cover text extraction confirmed **Alex Morgan**, **Student Affairs and Co-Curricular Learning**, and **September 20, 2026**. The completion date was correctly derived from the latest of the twelve completed lesson timestamps rather than from the PDF generation time. Visual review confirmed a prominent participant-name treatment, paired completion-date and pathway panels, proposal title, generated timestamp, and Dr. Bealman’s signature card without overlap or clipping.
+
+The local cover-validation participant and lesson data were removed after inspection. Reloading the public course confirmed the final delivery state opens unregistered at 0/12 with the normal registration controls. The temporary PDF was removed from the sandbox downloads directory.

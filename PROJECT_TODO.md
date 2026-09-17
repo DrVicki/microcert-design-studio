@@ -7,7 +7,7 @@
 - [x] Build the landing page, studio method, capstone brief, responsive curriculum rail, and source notes.
 - [x] Implement sequential lesson completion, timestamps, prerequisite explanations, and 100% completion gating.
 - [x] Implement the browser-saved field notebook with learner identity, per-lesson entries, evidence, reflection, and editing.
-- [x] Implement per-lesson text downloads, a combined Markdown proposal dossier, a personalized completion certificate, and a formatted multi-page PDF dossier.
+- [x] Implement per-lesson text downloads, a combined Markdown proposal dossier, a personalized completion certificate, and a formatted multi-page PDF dossier with a custom participant-name and completion-date cover.
 - [x] Add reusable standalone process visualizations for manual LMS integration.
 - [x] Implement accessible light and dark themes, visible focus, reduced motion, and print styles.
 - [x] Add Dr. Bealman’s supplied portrait, scanned signature, attribution, and participant welcome message.

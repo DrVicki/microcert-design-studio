@@ -43,12 +43,29 @@ export function proposalPdfFilename(state: ProposalPdfState) {
   return `${safeName(state.learnerName)}-microcert-proposal-dossier.pdf`;
 }
 
+export function proposalCompletionDate(state: ProposalPdfState) {
+  const timestamps = Object.values(state.work)
+    .filter(entry => entry.completed && entry.completedAt)
+    .map(entry => new Date(entry.completedAt as string).getTime())
+    .filter(timestamp => Number.isFinite(timestamp));
+  return timestamps.length ? new Date(Math.max(...timestamps)) : new Date();
+}
+
+export function formatProposalCompletionDate(state: ProposalPdfState, locale?: string) {
+  return proposalCompletionDate(state).toLocaleDateString(locale, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
 export function createProposalDossierPdf(state: ProposalPdfState) {
   const doc = new jsPDF({ unit: "pt", format: "letter", compress: true });
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 54;
   const contentWidth = pageWidth - margin * 2;
+  const completionDate = formatProposalCompletionDate(state);
   let y = margin;
 
   const setText = (color: readonly [number, number, number]) => doc.setTextColor(color[0], color[1], color[2]);
@@ -136,12 +153,40 @@ export function createProposalDossierPdf(state: ProposalPdfState) {
   setDraw(COLORS.gold);
   doc.setLineWidth(1);
   doc.line(margin, 326, pageWidth - margin, 326);
-  doc.setFontSize(10);
+  doc.setFont("courier", "bold");
+  doc.setFontSize(8);
+  setText(COLORS.gold);
+  doc.text("COMPLETED BY", margin, 357);
+  const participantName = state.learnerName || "Participant name not entered";
+  const participantNameSize = participantName.length > 60 ? 20 : participantName.length > 36 ? 24 : 29;
+  doc.setFont("times", "bold");
+  doc.setFontSize(participantNameSize);
   setText(COLORS.white);
-  doc.text(`Prepared by: ${state.learnerName || "Not entered"}`, margin, 360);
-  doc.text(`Role / unit: ${state.roleUnit || "Not entered"}`, margin, 380);
-  doc.text(`Proposed pathway: ${state.pathway}`, margin, 400);
-  doc.text(`Generated: ${new Date().toLocaleString()}`, margin, 420);
+  const participantNameLines = doc.splitTextToSize(participantName, contentWidth) as string[];
+  doc.text(participantNameLines, margin, 391);
+  const nameBottom = 391 + participantNameLines.length * participantNameSize * 1.05;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  setText([205, 216, 227]);
+  doc.text(state.roleUnit || "Role / unit not entered", margin, nameBottom + 10);
+  const detailY = Math.min(510, Math.max(458, nameBottom + 38));
+  setFill([20, 43, 70]);
+  doc.rect(margin, detailY, 242, 72, "F");
+  doc.rect(margin + 254, detailY, 250, 72, "F");
+  doc.setFont("courier", "bold");
+  doc.setFontSize(8);
+  setText(COLORS.gold);
+  doc.text("COMPLETION DATE", margin + 15, detailY + 22);
+  doc.text("PROPOSED PATHWAY", margin + 269, detailY + 22);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(12);
+  setText(COLORS.white);
+  doc.text(completionDate, margin + 15, detailY + 47);
+  doc.text(state.pathway, margin + 269, detailY + 47);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  setText([181, 197, 213]);
+  doc.text(`PDF generated ${new Date().toLocaleString()}`, margin, detailY + 94);
   setFill(COLORS.paper);
   doc.rect(margin, 625, 180, 70, "F");
   doc.addImage(signatureDataUrl, "PNG", margin + 10, 635, 150, 50);

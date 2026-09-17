@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { lessons } from "@/data/course";
-import { createProposalDossierPdf, proposalPdfFilename, type ProposalPdfState } from "./proposalPdf";
+import { createProposalDossierPdf, formatProposalCompletionDate, proposalCompletionDate, proposalPdfFilename, type ProposalPdfState } from "./proposalPdf";
 
 function completedState(): ProposalPdfState {
   return {
@@ -28,6 +28,8 @@ describe("Proposal Dossier PDF", () => {
     const signature = new TextDecoder().decode(bytes.slice(0, 4));
 
     expect(proposalPdfFilename(state)).toBe("jordan-lee-microcert-proposal-dossier.pdf");
+    expect(proposalCompletionDate(state).toISOString()).toBe("2026-09-17T15:00:00.000Z");
+    expect(formatProposalCompletionDate(state, "en-US")).toBe("September 17, 2026");
     expect(signature).toBe("%PDF");
     expect(doc.getNumberOfPages()).toBeGreaterThanOrEqual(15);
     expect(bytes.byteLength).toBeGreaterThan(25_000);
