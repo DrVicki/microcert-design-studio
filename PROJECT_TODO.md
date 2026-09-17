@@ -15,9 +15,13 @@
 - [x] Remove the legacy registration dashboard, route, UI components, API procedures, database helpers, and dashboard tests while preserving the historical table pending a separate retention decision.
 - [x] Apply and verify the database schema and registration timestamp index without inserting validation participant records.
 - [x] Verify the learner journey, notebook persistence, downloads, locked states, progress, and certificate personalization.
-- [x] Verify Microsoft Forms registration links, direct Fieldbook access, the legacy admin sign-in boundary, PDF file integrity, responsive layouts, and clean delivery state.
+- [x] Verify Microsoft Forms registration links, direct Fieldbook access, removed dashboard route, PDF file integrity, responsive layouts, and clean delivery state.
 - [x] Run the active unit suite, type checking, production build, contrast checks, responsive screenshot review, and browser-console checks.
 - [x] Save the final expanded-project checkpoint.
 - [x] Remove the retired GitHub Pages `/docs` companion, Pages guides, and one-purpose validation script.
 - [x] Add a Microsoft Forms new-tab tooltip and visible registration notice.
 - [x] Document the supported post-submission return-link workaround and automatic-redirect limitation.
+- [x] Produce a 1 minute 47 second welcome video with a mature American woman narration and professional academic tone.
+- [x] Cover the course purpose, four-studio structure, applied activities, browser-saved notebook, exports, and culminating Proposal Dossier.
+- [x] Add a responsive poster, burned-in captions, an 18-cue WebVTT track, native no-autoplay controls, and a complete transcript.
+- [x] Verify media integrity, playback, seeking, caption loading, transcript access, and desktop and mobile layouts.

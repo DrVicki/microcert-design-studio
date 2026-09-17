@@ -156,3 +156,13 @@ The `/admin/registrations` route, RegistrationDashboard page, DashboardLayout co
 Live browser inspection confirmed that the header registration anchor keeps the exact Microsoft Forms URL and exposes the accessible name **“Register for the Fieldbook in Microsoft Forms; opens in a new tab.”** The hero notice is present in the rendered document immediately below the three course actions, and the footer contains no legacy dashboard link.
 
 A live DOM interaction placed the header tooltip into its open state and returned the expected **“Opens Microsoft Forms in a new tab”** text. The registration anchor retains `target="_blank"` and `rel="noreferrer"`. Navigating directly to `/admin/registrations` now renders the standard 404 page, confirming the legacy dashboard route is no longer registered.
+
+## Welcome video integration
+
+A full-page desktop capture at 1440 × 1000 confirms the welcome video appears immediately after the hero as a distinct start-here experience. The 16:9 poster, course-purpose copy, duration, professional-narration label, caption label, and transcript control form a balanced two-column composition that matches the existing navy, parchment, and gold fieldbook system. The following Course Promise section remains visually distinct and correctly ordered.
+
+A full-page mobile capture at 390 × 844 confirms the welcome copy, metadata chips, video player, caption/no-autoplay note, and transcript disclosure stack cleanly without horizontal overflow. The player retains its 16:9 ratio and remains prominent before the course-promise and instructor sections.
+
+Live media inspection reported a 106.84-second, 1280 × 720 video at ready state 4. Programmatic muted playback advanced from 12.00 to 12.66 seconds and paused cleanly; native controls and inline playback are enabled, while autoplay is disabled. The poster and MP4 resolve from WebDev storage, all page images load, the transcript expands to seven paragraphs, and page overflow remains zero. Because the WebVTT asset follows a storage redirect to a CORS-enabled CDN, `crossOrigin="anonymous"` was added to the media element before the final caption-cue recheck.
+
+After enabling anonymous cross-origin media loading, the WebVTT track reached ready state 2 and exposed all 18 timed cues. The first and final cue texts match the script, and seeking to 70 seconds produced one active caption while playback advanced normally. The final player remains 106.84 seconds at 1280 × 720 with native controls, no autoplay, an English caption track, burned-in English captions, and the complete expandable transcript.

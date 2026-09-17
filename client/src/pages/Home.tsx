@@ -6,6 +6,7 @@ import {
   BookOpen,
   Check,
   CheckCircle2,
+  CirclePlay,
   ChevronRight,
   ClipboardCheck,
   Copy,
@@ -332,6 +333,40 @@ export default function Home() {
                 <div><span>12</span><small>applied lessons</small></div>
                 <div><span>6–8h</span><small>self-paced work</small></div>
                 <div><span>01</span><small>proposal dossier</small></div>
+              </div>
+            </section>
+
+            <section className="welcome-video-section content-frame" aria-labelledby="welcome-video-title">
+              <div className="welcome-video-copy">
+                <span className="section-index">Welcome / 01:47</span>
+                <span className="mono-label"><CirclePlay /> Start here</span>
+                <h2 id="welcome-video-title">See how the Fieldbook turns applied work into a Proposal Dossier.</h2>
+                <p id="welcome-video-description">Dr. Bealman introduces the purpose, four module studios, lesson activities, browser-saved notebook, and the evidence-led dossier you will prepare for review.</p>
+                <div className="welcome-video-facts" aria-label="Video details">
+                  <span>1 minute 47 seconds</span>
+                  <span>Professional narration</span>
+                  <span>English captions</span>
+                </div>
+              </div>
+              <div className="welcome-video-media">
+                <video controls playsInline preload="metadata" crossOrigin="anonymous" poster="/manus-storage/dr-bealman-fieldbook-welcome-poster_b33d44e6.jpg" aria-describedby="welcome-video-description">
+                  <source src="/manus-storage/dr-bealman-fieldbook-welcome_a16167dd.mp4" type="video/mp4" />
+                  <track kind="captions" src="/manus-storage/welcome-captions_aeffc4dc.vtt" srcLang="en" label="English" />
+                  Your browser does not support embedded video. <a href="/manus-storage/dr-bealman-fieldbook-welcome_a16167dd.mp4">Open the welcome video</a>.
+                </video>
+                <div className="welcome-video-note"><span>Captions are included in the video.</span><span>No autoplay.</span></div>
+                <details className="welcome-video-transcript">
+                  <summary>Read the video transcript</summary>
+                  <div>
+                    <p>Welcome to Dr. Vicki Bealman’s Micro-Certification Fieldbook.</p>
+                    <p>This self-paced design studio helps instructional designers, faculty partners, and co-curricular leaders turn a promising idea into a review-ready proposal for responsible implementation.</p>
+                    <p>You will work through four module studios. First, research the learner need and define a focused credential promise. Next, organize outcomes, practice, assessment, and evidence into an aligned learning path. Then, prototype a representative experience and plan a small, ethical pilot. Finally, refine accessibility, governance, measures, risks, and the decision you need reviewers to make.</p>
+                    <p>Each of the twelve lessons combines a concise reading with three design moves, an authentic activity, an applied readiness check, and a notebook artifact. Your work is saved in this browser, remains editable, and can be exported lesson by lesson.</p>
+                    <p>The activities build on one another. By the end, your completed artifacts become a Proposal Dossier: a concise, evidence-led package describing institutional fit, learner need, credential claim, assessment strategy, prototype evidence, pilot measures, accessibility, governance, risks, and the next decision.</p>
+                    <p>The Fieldbook supports thoughtful curriculum and co-curricular consideration. It does not confer institutional approval or a DeVry credential.</p>
+                    <p>Start with the need. Make your assumptions visible. Then use evidence to shape an experience reviewers can understand—and responsibly move forward.</p>
+                  </div>
+                </details>
               </div>
             </section>
 
