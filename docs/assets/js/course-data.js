@@ -1,5 +1,6 @@
 window.MICROCERT_COURSE = {
   liveUrl: "https://microcertds-vvhxhqkn.manus.space/",
+  registrationUrl: "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=nMl5-atR9k-G4DX9KHR4j1ZKtZhzxkxJvP6Hwc2NI75UMU5TRDBITlREOTZEOUZQWEZWMjRUWjZZMi4u",
   title: "Dr. Vicki Bealman's Micro-Certification Fieldbook",
   studios: [
     {

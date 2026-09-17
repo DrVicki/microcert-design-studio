@@ -29,3 +29,15 @@ A deterministic HTTP check reached `https://drvicki.github.io/microcert-design-s
 ## Live-site verification
 
 The published address opened successfully in the repository owner’s browser with the expected title and complete visual design. The hero artwork, navigation, course promise, instructor welcome, four studio summaries, first studio’s lesson cards, Proposal Dossier map, static/live boundary, public sources, and final live-course call to action all rendered on the HTTPS GitHub Pages domain. A direct DOM-console audit is unsupported in My Browser, so the live page was validated through its rendered content and screenshot, while the equivalent local package had already passed DOM counts, image loading, link-target, accordion, and overflow checks.
+
+## GitHub Pages disconnection
+
+At the user’s request, the existing GitHub Pages site was unpublished through repository settings. GitHub confirmed that unpublishing removed the currently served site, while also warning that the configured `main` → `/docs` source could rebuild it. The remaining disconnection step is therefore to set the Pages source branch to **None**. The proposed custom-domain file was removed before publication and no `micro-cert-fieldbook.org` or misspelled `mocro-cert-fieldbook.org` reference remains in the repository.
+
+GitHub Pages was then fully disabled by changing the publication source from `main` → `/docs` to **None** and saving. Repository settings now state: **“GitHub Pages is currently disabled.”** This prevents the retained static source files from automatically rebuilding or being served.
+
+## Registration-link update after disconnection
+
+The reusable static companion now separates registration from course access. Both **Register for the Fieldbook** buttons resolve to the user-supplied Microsoft Forms URL, while all `data-live-link` actions continue to resolve to `https://microcertds-vvhxhqkn.manus.space/`. A headless-browser DOM render verified both destinations after JavaScript initialization. The `docs/CNAME` file is absent.
+
+The revised `pnpm pages:check` passed 23 checks, including disabled-domain safeguards and both destination URLs. All eight application tests, TypeScript validation, the full production build, and `git diff --check` also passed.

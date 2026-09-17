@@ -6,6 +6,10 @@
     link.href = course.liveUrl;
   });
 
+  document.querySelectorAll("[data-registration-link]").forEach(link => {
+    link.href = course.registrationUrl;
+  });
+
   const studioList = document.getElementById("studio-list");
   if (studioList) {
     studioList.innerHTML = course.studios.map((studio, studioIndex) => `

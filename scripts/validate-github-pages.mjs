@@ -26,6 +26,9 @@ const cssPath = requireFile("docs/assets/css/styles.css");
 const dataPath = requireFile("docs/assets/js/course-data.js");
 requireFile("docs/assets/js/site.js");
 const guidePath = requireFile("GITHUB_PAGES.md");
+const cnamePath = path.join(docsRoot, "CNAME");
+if (fs.existsSync(cnamePath)) errors.push("docs/CNAME must be absent while GitHub Pages is disconnected");
+else pass("docs/CNAME is absent while GitHub Pages is disconnected");
 
 if (fs.existsSync(indexPath)) {
   const html = fs.readFileSync(indexPath, "utf8");
@@ -45,6 +48,10 @@ if (fs.existsSync(indexPath)) {
   const liveUrl = "https://microcertds-vvhxhqkn.manus.space/";
   if (!html.includes(liveUrl)) errors.push("index.html does not link to the live interactive Fieldbook");
   else pass("index.html links to the live interactive Fieldbook");
+
+  const registrationUrl = "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=nMl5-atR9k-G4DX9KHR4j1ZKtZhzxkxJvP6Hwc2NI75UMU5TRDBITlREOTZEOUZQWEZWMjRUWjZZMi4u";
+  if (!html.includes(registrationUrl)) errors.push("index.html does not link registration to the Microsoft form");
+  else pass("index.html links registration to the Microsoft form");
 
   if (!/public (?:course )?companion/i.test(html)) errors.push("index.html does not identify itself as the public companion");
   else pass("index.html states the static companion boundary");
@@ -72,6 +79,9 @@ if (fs.existsSync(dataPath)) {
   vm.runInNewContext(source, context, { filename: dataPath });
   const course = context.window.MICROCERT_COURSE;
   const lessons = course?.studios?.flatMap(studio => studio.lessons) ?? [];
+  const expectedRegistrationUrl = "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=nMl5-atR9k-G4DX9KHR4j1ZKtZhzxkxJvP6Hwc2NI75UMU5TRDBITlREOTZEOUZQWEZWMjRUWjZZMi4u";
+  if (course?.registrationUrl !== expectedRegistrationUrl) errors.push("Course data registration URL is not the requested Microsoft form");
+  else pass("course data uses the requested Microsoft Forms registration URL");
   if (course?.studios?.length !== 4) errors.push(`Expected 4 studios, found ${course?.studios?.length ?? 0}`);
   else pass("curriculum contains 4 studios");
   if (lessons.length !== 12) errors.push(`Expected 12 lessons, found ${lessons.length}`);
@@ -93,15 +103,16 @@ if (fs.existsSync(guidePath)) {
   const guide = fs.readFileSync(guidePath, "utf8");
   const required = [
     "DrVicki/microcert-design-studio",
-    "https://drvicki.github.io/microcert-design-studio/",
+    "GitHub Pages is **disabled**",
+    "source is set to **None**",
     "main",
     "/docs",
-    "Deploy from a branch",
+    "Microsoft Forms",
   ];
   for (const marker of required) {
     if (!guide.includes(marker)) errors.push(`Publishing guide is missing: ${marker}`);
   }
-  if (!errors.some(error => error.startsWith("Publishing guide"))) pass("publishing guide names the exact repository, branch, folder, mode, and URL");
+  if (!errors.some(error => error.startsWith("Publishing guide"))) pass("status guide documents disabled Pages, retained source, and registration destination");
 }
 
 if (errors.length) {
