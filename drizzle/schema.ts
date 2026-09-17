@@ -25,6 +25,11 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
+/**
+ * Archived records from the retired in-application registration workflow.
+ * The live application no longer reads from or writes to this table. It remains
+ * declared so historical records are not dropped without an explicit data-retention decision.
+ */
 export const registrations = mysqlTable(
   "registrations",
   {
@@ -38,6 +43,3 @@ export const registrations = mysqlTable(
   },
   table => [index("registrations_registered_at_idx").on(table.registeredAt)],
 );
-
-export type RegistrationRecord = typeof registrations.$inferSelect;
-export type InsertRegistrationRecord = typeof registrations.$inferInsert;

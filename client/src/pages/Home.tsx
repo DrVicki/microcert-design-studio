@@ -33,6 +33,7 @@ import {
 import { toast } from "sonner";
 import { ProcessVisuals } from "@/components/ProcessVisuals";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTheme } from "@/contexts/ThemeContext";
 import { capstoneSections, lessons, privacyReminder, sources, studios, type Lesson } from "@/data/course";
 import { signatureDataUrl } from "@/data/signature";
@@ -286,10 +287,15 @@ export default function Home() {
           <button className="icon-button" onClick={toggleTheme} aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`}>
             {theme === "light" ? <Moon /> : <Sun />}
           </button>
-          <a className="registration-button" href={REGISTRATION_URL} target="_blank" rel="noreferrer" aria-label="Register for the Fieldbook in Microsoft Forms">
-            <UserPlus />
-            <span>Register</span>
-          </a>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <a className="registration-button" href={REGISTRATION_URL} target="_blank" rel="noreferrer" aria-label="Register for the Fieldbook in Microsoft Forms; opens in a new tab">
+                <UserPlus />
+                <span>Register</span>
+              </a>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" sideOffset={8}>Opens Microsoft Forms in a new tab</TooltipContent>
+          </Tooltip>
           <button className="icon-button mobile-menu-button" onClick={() => setMobileMenu(value => !value)} aria-label="Toggle navigation">
             {mobileMenu ? <X /> : <Menu />}
           </button>
@@ -318,6 +324,7 @@ export default function Home() {
                   <button className="text-action" onClick={startCourse}>{completedCount ? "Resume the studio" : "Begin module studio 1"} <ChevronRight /></button>
                   <button className="text-action" onClick={() => navigateTo("dossier")}>Preview the proposal dossier <ChevronRight /></button>
                 </div>
+                <p className="registration-notice"><ExternalLink /> Registration opens in a new Microsoft Forms tab. Return here after submitting.</p>
                 <p className="hero-disclaimer">Independent professional-learning resource. Not an official DeVry course, policy, approval workflow, or credential.</p>
               </div>
               <div className="hero-ledger" aria-label="Course details">
@@ -656,7 +663,7 @@ export default function Home() {
 
       <footer>
         <div><strong>Dr. Vicki Bealman&apos;s Micro-Certification Fieldbook</strong><p>Independent instructional-design resource prepared for DeVry University curriculum and co-curricular consideration.</p></div>
-        <div><span>Research → Organize → Prototype → Refine → Evaluate</span><p>Fieldbook work is saved locally in the current browser. Keep confidential source files in approved institutional systems.</p><a className="admin-link" href="/admin/registrations">Legacy registration dashboard <ArrowRight /></a></div>
+        <div><span>Research → Organize → Prototype → Refine → Evaluate</span><p>Fieldbook work is saved locally in the current browser. Keep confidential source files in approved institutional systems.</p></div>
       </footer>
     </div>
   );

@@ -1,6 +1,6 @@
-import { count, desc, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertRegistrationRecord, InsertUser, registrations, users } from "../drizzle/schema";
+import { InsertUser, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -87,39 +87,4 @@ export async function getUserByOpenId(openId: string) {
   const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
 
   return result.length > 0 ? result[0] : undefined;
-}
-
-export async function saveRegistration(registration: InsertRegistrationRecord) {
-  const db = await getDb();
-  if (!db) throw new Error("Database is not available");
-
-  await db.insert(registrations).values(registration).onDuplicateKeyUpdate({
-    set: {
-      name: registration.name,
-      roleUnit: registration.roleUnit,
-      consentAcceptedAt: registration.consentAcceptedAt,
-      updatedAt: new Date(),
-    },
-  });
-
-  const [saved] = await db
-    .select()
-    .from(registrations)
-    .where(eq(registrations.email, registration.email))
-    .limit(1);
-
-  return saved;
-}
-
-export async function listRegistrations() {
-  const db = await getDb();
-  if (!db) throw new Error("Database is not available");
-  return db.select().from(registrations).orderBy(desc(registrations.registeredAt));
-}
-
-export async function getRegistrationStats() {
-  const db = await getDb();
-  if (!db) throw new Error("Database is not available");
-  const [result] = await db.select({ total: count() }).from(registrations);
-  return { total: result?.total ?? 0 };
 }

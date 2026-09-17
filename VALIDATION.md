@@ -146,3 +146,13 @@ The retired GitHub Pages `/docs` package, `GITHUB_PAGES.md`, `PAGES_VALIDATION.m
 Browser inspection confirmed that both visible registration anchors resolve to the exact Microsoft Forms response URL supplied by the user. Selecting **Module Studios** from a fresh 0/12 session opened `?view=course` immediately, rendered Lesson 01 and the full field notebook workspace, and did not open an internal registration dialog or require a browser registration record.
 
 The Microsoft Forms destination returned HTTP 200. The final technical run passed all eight Vitest checks, TypeScript validation, the production build, `git diff --check`, obsolete-reference scans, and deletion assertions for `/docs` and `/scripts`. The production build retained only the existing nonblocking large-chunk advisory.
+
+## Microsoft Forms notice and dashboard-code removal
+
+The header **Register** control now exposes an accessible tooltip reading **“Opens Microsoft Forms in a new tab.”** The hero also displays a persistent notice: **“Registration opens in a new Microsoft Forms tab. Return here after submitting.”** Desktop and 390 × 844 screenshots confirm the notice fits the existing fieldbook hierarchy, remains readable on the hero image, and does not clip or create horizontal overflow. The full-page desktop capture confirms the legacy dashboard link is absent from the footer.
+
+The `/admin/registrations` route, RegistrationDashboard page, DashboardLayout components, dashboard-only sidebar hook/component, registration tRPC router, database access helpers, registration-router test file, and all dashboard-specific CSS were removed. The historical registration table and migrations remain declared only to preserve existing records pending a separate retention decision; the application has no runtime read or write path to that table.
+
+Live browser inspection confirmed that the header registration anchor keeps the exact Microsoft Forms URL and exposes the accessible name **“Register for the Fieldbook in Microsoft Forms; opens in a new tab.”** The hero notice is present in the rendered document immediately below the three course actions, and the footer contains no legacy dashboard link.
+
+A live DOM interaction placed the header tooltip into its open state and returned the expected **“Opens Microsoft Forms in a new tab”** text. The registration anchor retains `target="_blank"` and `rel="noreferrer"`. Navigating directly to `/admin/registrations` now renders the standard 404 page, confirming the legacy dashboard route is no longer registered.

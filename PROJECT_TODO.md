@@ -12,10 +12,12 @@
 - [x] Implement accessible light and dark themes, visible focus, reduced motion, and print styles.
 - [x] Add Dr. Bealman’s supplied portrait, scanned signature, attribution, and participant welcome message.
 - [x] Originally implement persistent registration storage, then replace the live registration entry points with the supplied Microsoft Forms destination.
-- [x] Retain the authenticated registration dashboard only for legacy records collected before the Microsoft Forms transition.
+- [x] Remove the legacy registration dashboard, route, UI components, API procedures, database helpers, and dashboard tests while preserving the historical table pending a separate retention decision.
 - [x] Apply and verify the database schema and registration timestamp index without inserting validation participant records.
 - [x] Verify the learner journey, notebook persistence, downloads, locked states, progress, and certificate personalization.
 - [x] Verify Microsoft Forms registration links, direct Fieldbook access, the legacy admin sign-in boundary, PDF file integrity, responsive layouts, and clean delivery state.
-- [x] Run eight unit tests, type checking, production build, contrast checks, responsive screenshot review, and browser-console checks.
+- [x] Run the active unit suite, type checking, production build, contrast checks, responsive screenshot review, and browser-console checks.
 - [x] Save the final expanded-project checkpoint.
 - [x] Remove the retired GitHub Pages `/docs` companion, Pages guides, and one-purpose validation script.
+- [x] Add a Microsoft Forms new-tab tooltip and visible registration notice.
+- [x] Document the supported post-submission return-link workaround and automatic-redirect limitation.
