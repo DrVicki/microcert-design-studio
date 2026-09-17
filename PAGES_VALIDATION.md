@@ -41,3 +41,7 @@ GitHub Pages was then fully disabled by changing the publication source from `ma
 The reusable static companion now separates registration from course access. Both **Register for the Fieldbook** buttons resolve to the user-supplied Microsoft Forms URL, while all `data-live-link` actions continue to resolve to `https://microcertds-vvhxhqkn.manus.space/`. A headless-browser DOM render verified both destinations after JavaScript initialization. The `docs/CNAME` file is absent.
 
 The revised `pnpm pages:check` passed 23 checks, including disabled-domain safeguards and both destination URLs. All eight application tests, TypeScript validation, the full production build, and `git diff --check` also passed.
+
+## Final external verification
+
+After source removal, `https://drvicki.github.io/microcert-design-studio/` returned HTTP 404 on the first check, and the GitHub Pages API returned `404 Not Found` for the repository. Together with the repository-settings confirmation, this verifies that no active GitHub Pages site remains connected.
