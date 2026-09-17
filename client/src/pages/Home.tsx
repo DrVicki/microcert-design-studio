@@ -12,8 +12,10 @@ import {
   Download,
   ExternalLink,
   FileArchive,
+  FileDown,
   FileText,
   GraduationCap,
+  LoaderCircle,
   LockKeyhole,
   Menu,
   Moon,
@@ -35,6 +37,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useTheme } from "@/contexts/ThemeContext";
 import { capstoneSections, lessons, privacyReminder, sources, studios, type Lesson } from "@/data/course";
+import { trpc } from "@/lib/trpc";
 import { signatureDataUrl } from "@/data/signature";
 
 type WorkEntry = {
@@ -60,10 +63,18 @@ type CourseState = {
 type Section = "overview" | "course" | "notebook" | "visuals" | "dossier";
 
 type Registration = {
+  serverId: number;
   name: string;
   email: string;
   roleUnit: string;
   registeredAt: string;
+};
+
+type RegistrationDraft = {
+  name: string;
+  email: string;
+  roleUnit: string;
+  consent: boolean;
 };
 
 const STORAGE_KEY = "microcert-design-studio-v1";
@@ -80,7 +91,7 @@ function loadRegistration(): Registration | null {
   if (typeof window === "undefined") return null;
   try {
     const parsed = JSON.parse(localStorage.getItem(REGISTRATION_KEY) || "null") as Registration | null;
-    return parsed?.name && parsed?.email && parsed?.roleUnit ? parsed : null;
+    return parsed?.serverId && parsed?.name && parsed?.email && parsed?.roleUnit ? parsed : null;
   } catch {
     return null;
   }
@@ -171,7 +182,7 @@ export default function Home() {
   const initialRegistration = loadRegistration();
   const [state, setState] = useState<CourseState>(loadState);
   const [registration, setRegistration] = useState<Registration | null>(initialRegistration);
-  const [registrationDraft, setRegistrationDraft] = useState<Registration>(initialRegistration || { name: "", email: "", roleUnit: "", registeredAt: "" });
+  const [registrationDraft, setRegistrationDraft] = useState<RegistrationDraft>({ name: initialRegistration?.name || "", email: initialRegistration?.email || "", roleUnit: initialRegistration?.roleUnit || "", consent: Boolean(initialRegistration) });
   const [registrationOpen, setRegistrationOpen] = useState(requestedSection !== "overview" && !initialRegistration);
   const [pendingSection, setPendingSection] = useState<Section | null>(requestedSection !== "overview" && !initialRegistration ? requestedSection : null);
   const [section, setSection] = useState<Section>(requestedSection !== "overview" && !initialRegistration ? "overview" : requestedSection);
@@ -179,6 +190,8 @@ export default function Home() {
   const [railOpen, setRailOpen] = useState(false);
   const [notebookSearch, setNotebookSearch] = useState("");
   const [notebookStudio, setNotebookStudio] = useState("all");
+  const [pdfGenerating, setPdfGenerating] = useState(false);
+  const registrationMutation = trpc.registrations.save.useMutation();
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -220,31 +233,49 @@ export default function Home() {
 
   const requestRegistration = (target: Section = "course") => {
     setPendingSection(target);
-    setRegistrationDraft(registration || { name: "", email: "", roleUnit: "", registeredAt: "" });
+    setRegistrationDraft({ name: registration?.name || "", email: registration?.email || "", roleUnit: registration?.roleUnit || "", consent: Boolean(registration) });
     setRegistrationOpen(true);
     setMobileMenu(false);
   };
 
-  const submitRegistration = (event: FormEvent<HTMLFormElement>) => {
+  const submitRegistration = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const name = registrationDraft.name.trim();
     const email = registrationDraft.email.trim();
     const roleUnit = registrationDraft.roleUnit.trim();
-    if (!name || !roleUnit || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      toast.error("Enter your name, a valid email address, and your role, unit, or affiliation.");
+    if (!name || !roleUnit || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !registrationDraft.consent) {
+      toast.error("Complete all fields and confirm the registration data notice.");
       return;
     }
-    const saved = { name, email, roleUnit, registeredAt: registration?.registeredAt || new Date().toISOString() };
-    localStorage.setItem(REGISTRATION_KEY, JSON.stringify(saved));
-    setRegistration(saved);
-    setState(current => ({ ...current, learnerName: current.learnerName || name, roleUnit: current.roleUnit || roleUnit }));
-    setRegistrationOpen(false);
-    const target = pendingSection || "course";
-    setPendingSection(null);
-    setSection(target);
-    window.history.replaceState({}, "", `?view=${target}`);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    toast.success("Registration saved. The Fieldbook is unlocked in this browser.");
+    try {
+      const result = await registrationMutation.mutateAsync({ name, email, roleUnit, consent: true });
+      const saved: Registration = { serverId: result.id, name: result.name, email: result.email, roleUnit: result.roleUnit, registeredAt: new Date(result.registeredAt).toISOString() };
+      localStorage.setItem(REGISTRATION_KEY, JSON.stringify(saved));
+      setRegistration(saved);
+      setState(current => ({ ...current, learnerName: current.learnerName || name, roleUnit: current.roleUnit || roleUnit }));
+      setRegistrationOpen(false);
+      const target = pendingSection || "course";
+      setPendingSection(null);
+      setSection(target);
+      window.history.replaceState({}, "", `?view=${target}`);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      toast.success("Registration saved. The Fieldbook is unlocked.");
+    } catch {
+      toast.error("Registration could not be saved. Check your connection and try again.");
+    }
+  };
+
+  const downloadPdf = async () => {
+    try {
+      setPdfGenerating(true);
+      const { downloadProposalDossierPdf } = await import("@/lib/proposalPdf");
+      downloadProposalDossierPdf(state);
+      toast.success("Your formatted Proposal Dossier PDF is ready.");
+    } catch {
+      toast.error("The PDF could not be created. Please try again.");
+    } finally {
+      setPdfGenerating(false);
+    }
   };
 
   const setActiveLesson = (lessonId: string, index: number) => {
@@ -403,6 +434,7 @@ export default function Home() {
                 <span className="mono-label">Course author · fieldbook guide</span>
                 <h2 id="instructor-title">Dr. Vicki Bealman</h2>
                 <p>Dr. Bealman guides this design studio as an evidence-led working session. Her fieldbook structure helps instructional designers turn an initial co-curricular concept into a bounded learner promise, a testable experience, and a proposal dossier prepared for responsible review and implementation planning.</p>
+                <div className="instructor-welcome"><span>Welcome to the Fieldbook</span><p>I’m glad you’re here. Use this space to make your assumptions visible, test the strength of your evidence, and shape a co-curricular experience that reviewers can understand and responsibly move toward implementation.</p></div>
                 <blockquote>“Make the decision easy to inspect—even when the answer is not yet yes.”</blockquote>
                 <div className="instructor-signature" aria-label="Dr. Vicki Bealman, course author and instructor">
                   <img src="/manus-storage/VickiEditedSignature_a495cde7.png" alt="Scanned signature of Dr. Vicki Bealman" />
@@ -689,7 +721,8 @@ export default function Home() {
                 <h2>{allComplete ? "Your proposal dossier is ready." : `${lessons.length - completedCount} lessons remain.`}</h2>
                 <p>Exports contain your own entries plus the relevant prompts, checks, source notes, privacy warning, and status.</p>
                 <div className="export-progress"><div><i style={{ width: `${progress}%` }} /></div><span>{progress}%</span></div>
-                <button disabled={!allComplete || !profileComplete} onClick={() => downloadFile(`${safeName(state.learnerName)}-microcert-proposal-dossier.md`, dossierFile(state), "text/markdown;charset=utf-8")}><FileArchive /> Download proposal dossier</button>
+                <button className="pdf-export-action" disabled={!allComplete || !profileComplete || pdfGenerating} onClick={downloadPdf}>{pdfGenerating ? <LoaderCircle className="spin" /> : <FileDown />} {pdfGenerating ? "Formatting PDF…" : "Download formatted PDF"}</button>
+                <button disabled={!allComplete || !profileComplete} onClick={() => downloadFile(`${safeName(state.learnerName)}-microcert-proposal-dossier.md`, dossierFile(state), "text/markdown;charset=utf-8")}><FileArchive /> Download editable Markdown</button>
                 <button disabled={!allComplete || !profileComplete} onClick={() => downloadFile(`${safeName(state.learnerName)}-course-completion.html`, certificateFile(state), "text/html;charset=utf-8")}><GraduationCap /> Download completion certificate</button>
                 {!profileComplete && <p className="export-hint">Add dossier identity fields in the notebook to personalize exports.</p>}
                 {!allComplete && <p className="export-hint">All twelve lessons must be complete before capstone and certificate actions unlock.</p>}
@@ -705,7 +738,7 @@ export default function Home() {
           <DialogHeader>
             <span className="registration-eyebrow"><UserPlus /> Required before entry</span>
             <DialogTitle>Register to use the Fieldbook</DialogTitle>
-            <DialogDescription>Complete this one-time registration to unlock the Module Studios, Notebook, Visuals, and Proposal Dossier in this browser.</DialogDescription>
+            <DialogDescription>Complete this one-time registration to unlock the Module Studios, Notebook, Visuals, and Proposal Dossier.</DialogDescription>
           </DialogHeader>
           <form className="registration-form" onSubmit={submitRegistration}>
             <label>
@@ -714,21 +747,26 @@ export default function Home() {
             </label>
             <label>
               <span>Email address</span>
-              <input required type="email" autoComplete="email" value={registrationDraft.email} onChange={event => setRegistrationDraft(current => ({ ...current, email: event.target.value }))} placeholder="name@example.edu" />
+              <input required readOnly={Boolean(registration)} type="email" autoComplete="email" value={registrationDraft.email} onChange={event => setRegistrationDraft(current => ({ ...current, email: event.target.value }))} placeholder="name@example.edu" />
+              {registration ? <small className="registration-field-note">Email is fixed for this registration record.</small> : null}
             </label>
             <label>
               <span>Role, unit, or affiliation</span>
               <input required autoComplete="organization-title" value={registrationDraft.roleUnit} onChange={event => setRegistrationDraft(current => ({ ...current, roleUnit: event.target.value }))} placeholder="Instructional Design, Student Affairs, Faculty…" />
             </label>
-            <div className="registration-privacy"><ShieldCheck /><p><strong>Local registration.</strong> These details are saved only in this browser and are not transmitted by this static Fieldbook. Use an approved institutional registration system if centralized records are required.</p></div>
-            <Button type="submit">{registration ? "Update registration" : "Register and enter the Fieldbook"}<ArrowRight /></Button>
+            <label className="registration-consent">
+              <input type="checkbox" checked={registrationDraft.consent} onChange={event => setRegistrationDraft(current => ({ ...current, consent: event.target.checked }))} required />
+              <span>I understand that my name, email address, and role or affiliation will be saved to this course’s registration dashboard for authorized administrator review.</span>
+            </label>
+            <div className="registration-privacy"><ShieldCheck /><p><strong>Registration data notice.</strong> Registration details are stored in the course database. Fieldbook notes and proposal content remain in this browser unless you export and submit them separately.</p></div>
+            <Button type="submit" disabled={registrationMutation.isPending}>{registrationMutation.isPending ? <LoaderCircle className="spin" /> : null}{registrationMutation.isPending ? "Saving registration…" : registration ? "Update registration" : "Register and enter the Fieldbook"}{!registrationMutation.isPending ? <ArrowRight /> : null}</Button>
           </form>
         </DialogContent>
       </Dialog>
 
       <footer>
         <div><strong>Dr. Vicki Bealman&apos;s Micro-Certification Fieldbook</strong><p>Independent instructional-design resource prepared for DeVry University curriculum and co-curricular consideration.</p></div>
-        <div><span>Research → Organize → Prototype → Refine → Evaluate</span><p>Work is saved locally in the current browser. Keep confidential source files in approved institutional systems.</p></div>
+        <div><span>Research → Organize → Prototype → Refine → Evaluate</span><p>Fieldbook work is saved locally in the current browser. Keep confidential source files in approved institutional systems.</p><a className="admin-link" href="/admin/registrations">Administrator registration dashboard <ArrowRight /></a></div>
       </footer>
     </div>
   );

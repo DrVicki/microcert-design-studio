@@ -1,0 +1,1 @@
+CREATE INDEX `registrations_registered_at_idx` ON `registrations` (`registeredAt`);
