@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -25,13 +25,17 @@ import {
   Sun,
   Target,
   Timer,
+  UserPlus,
+  UserRoundCheck,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ProcessVisuals } from "@/components/ProcessVisuals";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useTheme } from "@/contexts/ThemeContext";
 import { capstoneSections, lessons, privacyReminder, sources, studios, type Lesson } from "@/data/course";
+import { signatureDataUrl } from "@/data/signature";
 
 type WorkEntry = {
   artifact: string;
@@ -55,13 +59,31 @@ type CourseState = {
 
 type Section = "overview" | "course" | "notebook" | "visuals" | "dossier";
 
+type Registration = {
+  name: string;
+  email: string;
+  roleUnit: string;
+  registeredAt: string;
+};
+
 const STORAGE_KEY = "microcert-design-studio-v1";
+const REGISTRATION_KEY = "microcert-fieldbook-registration-v1";
 const sectionValues: Section[] = ["overview", "course", "notebook", "visuals", "dossier"];
 
 function sectionFromUrl(): Section {
   if (typeof window === "undefined") return "overview";
   const candidate = new URLSearchParams(window.location.search).get("view") as Section | null;
   return candidate && sectionValues.includes(candidate) ? candidate : "overview";
+}
+
+function loadRegistration(): Registration | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const parsed = JSON.parse(localStorage.getItem(REGISTRATION_KEY) || "null") as Registration | null;
+    return parsed?.name && parsed?.email && parsed?.roleUnit ? parsed : null;
+  } catch {
+    return null;
+  }
 }
 
 const emptyEntry = (lesson: Lesson): WorkEntry => ({
@@ -140,13 +162,19 @@ function dossierFile(state: CourseState) {
 
 function certificateFile(state: CourseState) {
   const issued = new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
-  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Course Completion — ${state.learnerName || "Learner"}</title><style>@page{size:landscape;margin:0}*{box-sizing:border-box}body{margin:0;background:#0b1b31;color:#0b1b31;font-family:Arial,sans-serif}.page{width:11in;height:8.5in;margin:auto;padding:.45in;background:#efe6d3}.frame{height:100%;border:4px solid #0b1b31;outline:1px solid #b88a2e;outline-offset:-16px;padding:.65in;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative}.eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:#80601e}.mark{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;background:#b88a2e;color:white;font-size:32px;margin:18px}.fieldbook{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#80601e;margin-bottom:8px}h1{font-family:Georgia,serif;font-size:44px;margin:0 0 14px}.name{font-family:Georgia,serif;font-size:34px;border-bottom:1px solid #b88a2e;padding:0 30px 8px;margin:8px}.copy{max-width:720px;font-size:16px;line-height:1.55}.instructor{margin-top:14px;font-family:Georgia,serif;font-size:17px;color:#80601e}.details{display:flex;gap:48px;margin-top:20px;font-size:13px}.note{position:absolute;bottom:22px;left:56px;right:56px;font-size:9px;color:#59616d}@media print{body{background:white}.page{margin:0}}</style></head><body><main class="page"><section class="frame"><div class="eyebrow">Certificate of course completion</div><div class="mark">✓</div><div class="fieldbook">Dr. Vicki Bealman's Micro-Certification Fieldbook</div><h1>Micro-Certification Design Studio</h1><p class="copy">This acknowledges that</p><div class="name">${state.learnerName || "Learner name"}</div><p class="copy">completed all twelve applied lessons and assembled a proposal dossier for <strong>${state.proposalTitle || "a proposed micro-certification"}</strong>.</p><div class="instructor">Course author and instructor · Dr. Vicki Bealman</div><div class="details"><span>${issued}</span><span>${state.pathway} pathway</span><span>12 / 12 lessons</span></div><p class="note">This is a local certificate of completion for this professional-learning design studio. It is not a DeVry University credential, approval, academic credit, accreditation, or authorization to issue a micro-certification.</p></section></main></body></html>`;
+  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Course Completion — ${state.learnerName || "Learner"}</title><style>@page{size:landscape;margin:0}*{box-sizing:border-box}body{margin:0;background:#0b1b31;color:#0b1b31;font-family:Arial,sans-serif}.page{width:11in;height:8.5in;margin:auto;padding:.45in;background:#efe6d3}.frame{height:100%;border:4px solid #0b1b31;outline:1px solid #b88a2e;outline-offset:-16px;padding:.55in;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative}.eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#80601e}.mark{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;background:#b88a2e;color:white;font-size:28px;margin:12px}.fieldbook{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#80601e;margin-bottom:6px}h1{font-family:Georgia,serif;font-size:41px;margin:0 0 10px}.name{font-family:Georgia,serif;font-size:32px;border-bottom:1px solid #b88a2e;padding:0 30px 6px;margin:6px}.copy{max-width:720px;font-size:15px;line-height:1.45;margin:7px}.signature{display:block;width:165px;height:auto;margin:4px auto -2px}.instructor{font-family:Georgia,serif;font-size:15px;color:#80601e}.details{display:flex;gap:48px;margin-top:14px;font-size:12px}.note{position:absolute;bottom:20px;left:56px;right:56px;font-size:9px;color:#59616d}@media print{body{background:white}.page{margin:0}}</style></head><body><main class="page"><section class="frame"><div class="eyebrow">Certificate of course completion</div><div class="mark">✓</div><div class="fieldbook">Dr. Vicki Bealman's Micro-Certification Fieldbook</div><h1>Micro-Certification Design Studio</h1><p class="copy">This acknowledges that</p><div class="name">${state.learnerName || "Learner name"}</div><p class="copy">completed all twelve applied lessons and assembled a proposal dossier for <strong>${state.proposalTitle || "a proposed micro-certification"}</strong>.</p><img class="signature" src="${signatureDataUrl}" alt="Scanned signature of Dr. Vicki Bealman"><div class="instructor">Course author and instructor · Dr. Vicki Bealman</div><div class="details"><span>${issued}</span><span>${state.pathway} pathway</span><span>12 / 12 lessons</span></div><p class="note">This is a local certificate of completion for this professional-learning design studio. It is not a DeVry University credential, approval, academic credit, accreditation, or authorization to issue a micro-certification.</p></section></main></body></html>`;
 }
 
 export default function Home() {
   const { theme, toggleTheme } = useTheme();
+  const requestedSection = sectionFromUrl();
+  const initialRegistration = loadRegistration();
   const [state, setState] = useState<CourseState>(loadState);
-  const [section, setSection] = useState<Section>(sectionFromUrl);
+  const [registration, setRegistration] = useState<Registration | null>(initialRegistration);
+  const [registrationDraft, setRegistrationDraft] = useState<Registration>(initialRegistration || { name: "", email: "", roleUnit: "", registeredAt: "" });
+  const [registrationOpen, setRegistrationOpen] = useState(requestedSection !== "overview" && !initialRegistration);
+  const [pendingSection, setPendingSection] = useState<Section | null>(requestedSection !== "overview" && !initialRegistration ? requestedSection : null);
+  const [section, setSection] = useState<Section>(requestedSection !== "overview" && !initialRegistration ? "overview" : requestedSection);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [railOpen, setRailOpen] = useState(false);
   const [notebookSearch, setNotebookSearch] = useState("");
@@ -190,7 +218,40 @@ export default function Home() {
     }));
   };
 
+  const requestRegistration = (target: Section = "course") => {
+    setPendingSection(target);
+    setRegistrationDraft(registration || { name: "", email: "", roleUnit: "", registeredAt: "" });
+    setRegistrationOpen(true);
+    setMobileMenu(false);
+  };
+
+  const submitRegistration = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const name = registrationDraft.name.trim();
+    const email = registrationDraft.email.trim();
+    const roleUnit = registrationDraft.roleUnit.trim();
+    if (!name || !roleUnit || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error("Enter your name, a valid email address, and your role, unit, or affiliation.");
+      return;
+    }
+    const saved = { name, email, roleUnit, registeredAt: registration?.registeredAt || new Date().toISOString() };
+    localStorage.setItem(REGISTRATION_KEY, JSON.stringify(saved));
+    setRegistration(saved);
+    setState(current => ({ ...current, learnerName: current.learnerName || name, roleUnit: current.roleUnit || roleUnit }));
+    setRegistrationOpen(false);
+    const target = pendingSection || "course";
+    setPendingSection(null);
+    setSection(target);
+    window.history.replaceState({}, "", `?view=${target}`);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    toast.success("Registration saved. The Fieldbook is unlocked in this browser.");
+  };
+
   const setActiveLesson = (lessonId: string, index: number) => {
+    if (!registration) {
+      requestRegistration("course");
+      return;
+    }
     if (index > maxOpenIndex) {
       toast.info(`Complete Lesson ${String(maxOpenIndex + 1).padStart(2, "0")} to unlock this lesson.`);
       return;
@@ -233,6 +294,10 @@ export default function Home() {
   };
 
   const navigateTo = (next: Section) => {
+    if (next !== "overview" && !registration) {
+      requestRegistration(next);
+      return;
+    }
     setSection(next);
     window.history.replaceState({}, "", next === "overview" ? window.location.pathname : `?view=${next}`);
     setMobileMenu(false);
@@ -240,6 +305,10 @@ export default function Home() {
   };
 
   const startCourse = () => {
+    if (!registration) {
+      requestRegistration("course");
+      return;
+    }
     const nextIndex = firstIncompleteIndex === -1 ? 0 : firstIncompleteIndex;
     setActiveLesson(lessons[nextIndex].id, nextIndex);
   };
@@ -266,6 +335,10 @@ export default function Home() {
           <button className="icon-button" onClick={toggleTheme} aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`}>
             {theme === "light" ? <Moon /> : <Sun />}
           </button>
+          <button className={`registration-button ${registration ? "registered" : ""}`} onClick={() => requestRegistration(section === "overview" ? "course" : section)} aria-label={registration ? `Update registration for ${registration.name}` : "Register to use the Fieldbook"}>
+            {registration ? <UserRoundCheck /> : <UserPlus />}
+            <span>{registration ? `Registered · ${registration.name.split(" ")[0]}` : "Register"}</span>
+          </button>
           <button className="icon-button mobile-menu-button" onClick={() => setMobileMenu(value => !value)} aria-label="Toggle navigation">
             {mobileMenu ? <X /> : <Menu />}
           </button>
@@ -290,7 +363,7 @@ export default function Home() {
                 <h1>Design a micro-certification that earns the next conversation.</h1>
                 <p>Research the need. Architect the evidence. Prototype the experience. Package a decision-ready dossier for DeVry University curriculum or co-curricular consideration.</p>
                 <div className="hero-actions">
-                  <Button size="lg" onClick={startCourse}>{completedCount ? "Resume the studio" : "Begin module studio 1"}<ArrowRight /></Button>
+                  <Button size="lg" onClick={startCourse}>{!registration ? "Register to begin" : completedCount ? "Resume the studio" : "Begin module studio 1"}<ArrowRight /></Button>
                   <button className="text-action" onClick={() => navigateTo("dossier")}>Preview the proposal dossier <ChevronRight /></button>
                 </div>
                 <p className="hero-disclaimer">Independent professional-learning resource. Not an official DeVry course, policy, approval workflow, or credential.</p>
@@ -332,7 +405,8 @@ export default function Home() {
                 <p>Dr. Bealman guides this design studio as an evidence-led working session. Her fieldbook structure helps instructional designers turn an initial co-curricular concept into a bounded learner promise, a testable experience, and a proposal dossier prepared for responsible review and implementation planning.</p>
                 <blockquote>“Make the decision easy to inspect—even when the answer is not yet yes.”</blockquote>
                 <div className="instructor-signature" aria-label="Dr. Vicki Bealman, course author and instructor">
-                  <strong>Dr. Vicki Bealman</strong><small>Micro-Certification Fieldbook</small>
+                  <img src="/manus-storage/VickiEditedSignature_a495cde7.png" alt="Scanned signature of Dr. Vicki Bealman" />
+                  <small>Dr. Vicki Bealman · Micro-Certification Fieldbook</small>
                 </div>
               </div>
             </section>
@@ -625,6 +699,32 @@ export default function Home() {
           </section>
         )}
       </main>
+
+      <Dialog open={registrationOpen} onOpenChange={setRegistrationOpen}>
+        <DialogContent className="registration-dialog overflow-hidden rounded-none border-0 p-0 sm:max-w-xl">
+          <DialogHeader>
+            <span className="registration-eyebrow"><UserPlus /> Required before entry</span>
+            <DialogTitle>Register to use the Fieldbook</DialogTitle>
+            <DialogDescription>Complete this one-time registration to unlock the Module Studios, Notebook, Visuals, and Proposal Dossier in this browser.</DialogDescription>
+          </DialogHeader>
+          <form className="registration-form" onSubmit={submitRegistration}>
+            <label>
+              <span>Full name</span>
+              <input required autoComplete="name" value={registrationDraft.name} onChange={event => setRegistrationDraft(current => ({ ...current, name: event.target.value }))} placeholder="Your full name" />
+            </label>
+            <label>
+              <span>Email address</span>
+              <input required type="email" autoComplete="email" value={registrationDraft.email} onChange={event => setRegistrationDraft(current => ({ ...current, email: event.target.value }))} placeholder="name@example.edu" />
+            </label>
+            <label>
+              <span>Role, unit, or affiliation</span>
+              <input required autoComplete="organization-title" value={registrationDraft.roleUnit} onChange={event => setRegistrationDraft(current => ({ ...current, roleUnit: event.target.value }))} placeholder="Instructional Design, Student Affairs, Faculty…" />
+            </label>
+            <div className="registration-privacy"><ShieldCheck /><p><strong>Local registration.</strong> These details are saved only in this browser and are not transmitted by this static Fieldbook. Use an approved institutional registration system if centralized records are required.</p></div>
+            <Button type="submit">{registration ? "Update registration" : "Register and enter the Fieldbook"}<ArrowRight /></Button>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <footer>
         <div><strong>Dr. Vicki Bealman&apos;s Micro-Certification Fieldbook</strong><p>Independent instructional-design resource prepared for DeVry University curriculum and co-curricular consideration.</p></div>

@@ -170,6 +170,10 @@
   .header-progress { display: flex; align-items: center; gap: 8px; font: 600 11px "IBM Plex Mono", monospace; }
   .header-progress > div { width: 64px; height: 4px; background: rgba(255,255,255,.18); }
   .header-progress i, .rail-progress i, .export-progress i { display: block; height: 100%; background: var(--gold); transition: width 260ms cubic-bezier(.23,1,.32,1); }
+  .registration-button { min-height: 38px; display: inline-flex; align-items: center; gap: 8px; padding: 0 12px; border: 1px solid var(--gold); background: var(--gold); color: var(--navy); font: 750 10px "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+  .registration-button:hover { background: #e1b95d; }
+  .registration-button.registered { background: rgba(113,197,168,.12); border-color: #71c5a8; color: #b7ead8; }
+  .registration-button svg { width: 16px; }
   .icon-button { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); color: white; }
   .icon-button:hover { border-color: var(--gold); color: var(--gold); }
   .icon-button svg { width: 18px; }
@@ -215,9 +219,28 @@
   .instructor-copy h2 { margin: 8px 0 18px; font-size: clamp(3rem, 5.5vw, 5.7rem); line-height: .95; letter-spacing: -.05em; }
   .instructor-copy > p { max-width: 770px; color: var(--muted-foreground); font-size: 17px; line-height: 1.8; }
   .instructor-copy blockquote { max-width: 700px; margin: 28px 0; padding: 20px 0 20px 25px; color: var(--foreground); border-left: 3px solid var(--gold); font: 600 25px/1.4 "Fraunces", serif; }
-  .instructor-signature { display: inline-grid; gap: 2px; margin-top: 6px; padding: 16px 42px 9px 0; border-bottom: 1px solid var(--gold-deep); transform: rotate(-1deg); }
-  .instructor-signature strong { font: 600 27px "Fraunces", serif; font-style: italic; color: var(--gold-deep); }
-  .instructor-signature small { font: 600 8px "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: .1em; color: var(--muted-foreground); }
+  .instructor-signature { display: inline-grid; gap: 6px; justify-items: center; margin-top: 6px; padding: 10px 22px 9px; background: #f7f1e6; border: 1px solid #c9b98f; border-bottom: 2px solid var(--gold-deep); transform: rotate(-1deg); box-shadow: 8px 8px 0 var(--paper-deep); }
+  .instructor-signature img { display: block; width: min(280px, 62vw); height: auto; }
+  .instructor-signature small { font: 600 8px "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: .1em; color: #465365; }
+
+  .registration-dialog { gap: 0; background: var(--paper); color: var(--foreground); box-shadow: 0 28px 100px rgba(0,0,0,.45); }
+  .registration-dialog > [data-slot="dialog-header"] { gap: 12px; padding: 30px 34px 28px; background: var(--navy); color: white; text-align: left; }
+  .registration-dialog [data-slot="dialog-title"] { font: 600 clamp(2rem, 5vw, 3.2rem)/1 "Fraunces", serif; letter-spacing: -.04em; }
+  .registration-dialog [data-slot="dialog-description"] { max-width: 520px; color: #c5d1dd; font-size: 14px; line-height: 1.65; }
+  .registration-dialog [data-slot="dialog-close"] { top: 18px; right: 18px; color: white; }
+  .registration-eyebrow { display: flex; align-items: center; gap: 8px; color: var(--gold); font: 700 10px "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: .09em; }
+  .registration-eyebrow svg { width: 16px; }
+  .registration-form { display: grid; gap: 17px; padding: 28px 34px 34px; }
+  .registration-form label { display: grid; gap: 7px; }
+  .registration-form label > span { font: 700 10px "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: .06em; color: var(--muted-foreground); }
+  .registration-form input { width: 100%; min-height: 47px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 0; background: var(--surface); color: var(--foreground); font-size: 15px; }
+  .registration-form input:focus { border-color: var(--gold-deep); outline: 3px solid color-mix(in srgb, var(--gold) 24%, transparent); outline-offset: 1px; }
+  .registration-form > button { min-height: 49px; border-radius: 0; background: var(--gold); color: var(--navy); font-weight: 800; }
+  .registration-form > button:hover { background: #e1b95d; }
+  .registration-privacy { display: grid; grid-template-columns: 22px 1fr; gap: 10px; padding: 13px; background: var(--surface); border-left: 3px solid var(--gold); }
+  .registration-privacy svg { width: 19px; color: var(--success); }
+  .registration-privacy p { margin: 0; color: var(--muted-foreground); font-size: 11px; line-height: 1.55; }
+  .registration-privacy strong { color: var(--foreground); }
 
   .method-band { padding-block: 84px; background: var(--navy); color: white; position: relative; }
   .method-band::before { content: ""; position: absolute; inset: 0; opacity: .18; background-image: linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px); background-size: 40px 40px; }
@@ -506,6 +529,8 @@
   .site-header { height: 68px; padding: 0 14px; }
   .mobile-nav { top: 68px; }
   .brand-lockup small { display: none; }
+  .registration-button { width: 38px; padding: 0; justify-content: center; }
+  .registration-button span { display: none; }
   .hero-section { min-height: 760px; align-items: center; }
   .hero-section > img { object-position: 60% center; }
   .hero-scrim { background: linear-gradient(90deg, rgba(6,17,31,.97), rgba(6,17,31,.75)), linear-gradient(0deg, rgba(6,17,31,.9), transparent); }
@@ -568,6 +593,8 @@
 
 @media (max-width: 520px) {
   .brand-lockup > span:last-child { display: none; }
+  .registration-dialog > [data-slot="dialog-header"] { padding: 26px 22px 22px; }
+  .registration-form { padding: 22px; }
   .hero-copy { margin-bottom: 170px; }
   .hero-ledger small { font-size: 8px; }
   .studio-image { height: 200px; }
