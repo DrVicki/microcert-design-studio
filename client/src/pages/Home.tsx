@@ -250,7 +250,7 @@ export default function Home() {
       <header className="site-header">
         <button className="brand-lockup" onClick={() => navigateTo("overview")} aria-label="Go to course overview">
           <span className="brand-mark" aria-hidden="true"><span>MC</span></span>
-          <span><strong>Design Studio</strong><small>micro-certification fieldbook</small></span>
+          <span><strong>Design Studio</strong><small>Dr. Vicki Bealman&apos;s Micro-Certification Fieldbook</small></span>
         </button>
         <nav className="desktop-nav" aria-label="Primary navigation">
           {(["overview", "course", "notebook", "visuals", "dossier"] as Section[]).map(item => (
