@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -28,16 +28,13 @@ import {
   Target,
   Timer,
   UserPlus,
-  UserRoundCheck,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ProcessVisuals } from "@/components/ProcessVisuals";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useTheme } from "@/contexts/ThemeContext";
 import { capstoneSections, lessons, privacyReminder, sources, studios, type Lesson } from "@/data/course";
-import { trpc } from "@/lib/trpc";
 import { signatureDataUrl } from "@/data/signature";
 
 type WorkEntry = {
@@ -62,39 +59,14 @@ type CourseState = {
 
 type Section = "overview" | "course" | "notebook" | "visuals" | "dossier";
 
-type Registration = {
-  serverId: number;
-  name: string;
-  email: string;
-  roleUnit: string;
-  registeredAt: string;
-};
-
-type RegistrationDraft = {
-  name: string;
-  email: string;
-  roleUnit: string;
-  consent: boolean;
-};
-
 const STORAGE_KEY = "microcert-design-studio-v1";
-const REGISTRATION_KEY = "microcert-fieldbook-registration-v1";
+const REGISTRATION_URL = "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=nMl5-atR9k-G4DX9KHR4j1ZKtZhzxkxJvP6Hwc2NI75UMU5TRDBITlREOTZEOUZQWEZWMjRUWjZZMi4u";
 const sectionValues: Section[] = ["overview", "course", "notebook", "visuals", "dossier"];
 
 function sectionFromUrl(): Section {
   if (typeof window === "undefined") return "overview";
   const candidate = new URLSearchParams(window.location.search).get("view") as Section | null;
   return candidate && sectionValues.includes(candidate) ? candidate : "overview";
-}
-
-function loadRegistration(): Registration | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const parsed = JSON.parse(localStorage.getItem(REGISTRATION_KEY) || "null") as Registration | null;
-    return parsed?.serverId && parsed?.name && parsed?.email && parsed?.roleUnit ? parsed : null;
-  } catch {
-    return null;
-  }
 }
 
 const emptyEntry = (lesson: Lesson): WorkEntry => ({
@@ -179,19 +151,13 @@ function certificateFile(state: CourseState) {
 export default function Home() {
   const { theme, toggleTheme } = useTheme();
   const requestedSection = sectionFromUrl();
-  const initialRegistration = loadRegistration();
   const [state, setState] = useState<CourseState>(loadState);
-  const [registration, setRegistration] = useState<Registration | null>(initialRegistration);
-  const [registrationDraft, setRegistrationDraft] = useState<RegistrationDraft>({ name: initialRegistration?.name || "", email: initialRegistration?.email || "", roleUnit: initialRegistration?.roleUnit || "", consent: Boolean(initialRegistration) });
-  const [registrationOpen, setRegistrationOpen] = useState(requestedSection !== "overview" && !initialRegistration);
-  const [pendingSection, setPendingSection] = useState<Section | null>(requestedSection !== "overview" && !initialRegistration ? requestedSection : null);
-  const [section, setSection] = useState<Section>(requestedSection !== "overview" && !initialRegistration ? "overview" : requestedSection);
+  const [section, setSection] = useState<Section>(requestedSection);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [railOpen, setRailOpen] = useState(false);
   const [notebookSearch, setNotebookSearch] = useState("");
   const [notebookStudio, setNotebookStudio] = useState("all");
   const [pdfGenerating, setPdfGenerating] = useState(false);
-  const registrationMutation = trpc.registrations.save.useMutation();
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -231,40 +197,6 @@ export default function Home() {
     }));
   };
 
-  const requestRegistration = (target: Section = "course") => {
-    setPendingSection(target);
-    setRegistrationDraft({ name: registration?.name || "", email: registration?.email || "", roleUnit: registration?.roleUnit || "", consent: Boolean(registration) });
-    setRegistrationOpen(true);
-    setMobileMenu(false);
-  };
-
-  const submitRegistration = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const name = registrationDraft.name.trim();
-    const email = registrationDraft.email.trim();
-    const roleUnit = registrationDraft.roleUnit.trim();
-    if (!name || !roleUnit || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !registrationDraft.consent) {
-      toast.error("Complete all fields and confirm the registration data notice.");
-      return;
-    }
-    try {
-      const result = await registrationMutation.mutateAsync({ name, email, roleUnit, consent: true });
-      const saved: Registration = { serverId: result.id, name: result.name, email: result.email, roleUnit: result.roleUnit, registeredAt: new Date(result.registeredAt).toISOString() };
-      localStorage.setItem(REGISTRATION_KEY, JSON.stringify(saved));
-      setRegistration(saved);
-      setState(current => ({ ...current, learnerName: current.learnerName || name, roleUnit: current.roleUnit || roleUnit }));
-      setRegistrationOpen(false);
-      const target = pendingSection || "course";
-      setPendingSection(null);
-      setSection(target);
-      window.history.replaceState({}, "", `?view=${target}`);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      toast.success("Registration saved. The Fieldbook is unlocked.");
-    } catch {
-      toast.error("Registration could not be saved. Check your connection and try again.");
-    }
-  };
-
   const downloadPdf = async () => {
     try {
       setPdfGenerating(true);
@@ -279,10 +211,6 @@ export default function Home() {
   };
 
   const setActiveLesson = (lessonId: string, index: number) => {
-    if (!registration) {
-      requestRegistration("course");
-      return;
-    }
     if (index > maxOpenIndex) {
       toast.info(`Complete Lesson ${String(maxOpenIndex + 1).padStart(2, "0")} to unlock this lesson.`);
       return;
@@ -325,10 +253,6 @@ export default function Home() {
   };
 
   const navigateTo = (next: Section) => {
-    if (next !== "overview" && !registration) {
-      requestRegistration(next);
-      return;
-    }
     setSection(next);
     window.history.replaceState({}, "", next === "overview" ? window.location.pathname : `?view=${next}`);
     setMobileMenu(false);
@@ -336,10 +260,6 @@ export default function Home() {
   };
 
   const startCourse = () => {
-    if (!registration) {
-      requestRegistration("course");
-      return;
-    }
     const nextIndex = firstIncompleteIndex === -1 ? 0 : firstIncompleteIndex;
     setActiveLesson(lessons[nextIndex].id, nextIndex);
   };
@@ -366,10 +286,10 @@ export default function Home() {
           <button className="icon-button" onClick={toggleTheme} aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`}>
             {theme === "light" ? <Moon /> : <Sun />}
           </button>
-          <button className={`registration-button ${registration ? "registered" : ""}`} onClick={() => requestRegistration(section === "overview" ? "course" : section)} aria-label={registration ? `Update registration for ${registration.name}` : "Register to use the Fieldbook"}>
-            {registration ? <UserRoundCheck /> : <UserPlus />}
-            <span>{registration ? `Registered · ${registration.name.split(" ")[0]}` : "Register"}</span>
-          </button>
+          <a className="registration-button" href={REGISTRATION_URL} target="_blank" rel="noreferrer" aria-label="Register for the Fieldbook in Microsoft Forms">
+            <UserPlus />
+            <span>Register</span>
+          </a>
           <button className="icon-button mobile-menu-button" onClick={() => setMobileMenu(value => !value)} aria-label="Toggle navigation">
             {mobileMenu ? <X /> : <Menu />}
           </button>
@@ -394,7 +314,8 @@ export default function Home() {
                 <h1>Design a micro-certification that earns the next conversation.</h1>
                 <p>Research the need. Architect the evidence. Prototype the experience. Package a decision-ready dossier for DeVry University curriculum or co-curricular consideration.</p>
                 <div className="hero-actions">
-                  <Button size="lg" onClick={startCourse}>{!registration ? "Register to begin" : completedCount ? "Resume the studio" : "Begin module studio 1"}<ArrowRight /></Button>
+                  <Button size="lg" asChild><a href={REGISTRATION_URL} target="_blank" rel="noreferrer">Register to begin <ArrowRight /></a></Button>
+                  <button className="text-action" onClick={startCourse}>{completedCount ? "Resume the studio" : "Begin module studio 1"} <ChevronRight /></button>
                   <button className="text-action" onClick={() => navigateTo("dossier")}>Preview the proposal dossier <ChevronRight /></button>
                 </div>
                 <p className="hero-disclaimer">Independent professional-learning resource. Not an official DeVry course, policy, approval workflow, or credential.</p>
@@ -733,40 +654,9 @@ export default function Home() {
         )}
       </main>
 
-      <Dialog open={registrationOpen} onOpenChange={setRegistrationOpen}>
-        <DialogContent className="registration-dialog overflow-hidden rounded-none border-0 p-0 sm:max-w-xl">
-          <DialogHeader>
-            <span className="registration-eyebrow"><UserPlus /> Required before entry</span>
-            <DialogTitle>Register to use the Fieldbook</DialogTitle>
-            <DialogDescription>Complete this one-time registration to unlock the Module Studios, Notebook, Visuals, and Proposal Dossier.</DialogDescription>
-          </DialogHeader>
-          <form className="registration-form" onSubmit={submitRegistration}>
-            <label>
-              <span>Full name</span>
-              <input required autoComplete="name" value={registrationDraft.name} onChange={event => setRegistrationDraft(current => ({ ...current, name: event.target.value }))} placeholder="Your full name" />
-            </label>
-            <label>
-              <span>Email address</span>
-              <input required readOnly={Boolean(registration)} type="email" autoComplete="email" value={registrationDraft.email} onChange={event => setRegistrationDraft(current => ({ ...current, email: event.target.value }))} placeholder="name@example.edu" />
-              {registration ? <small className="registration-field-note">Email is fixed for this registration record.</small> : null}
-            </label>
-            <label>
-              <span>Role, unit, or affiliation</span>
-              <input required autoComplete="organization-title" value={registrationDraft.roleUnit} onChange={event => setRegistrationDraft(current => ({ ...current, roleUnit: event.target.value }))} placeholder="Instructional Design, Student Affairs, Faculty…" />
-            </label>
-            <label className="registration-consent">
-              <input type="checkbox" checked={registrationDraft.consent} onChange={event => setRegistrationDraft(current => ({ ...current, consent: event.target.checked }))} required />
-              <span>I understand that my name, email address, and role or affiliation will be saved to this course’s registration dashboard for authorized administrator review.</span>
-            </label>
-            <div className="registration-privacy"><ShieldCheck /><p><strong>Registration data notice.</strong> Registration details are stored in the course database. Fieldbook notes and proposal content remain in this browser unless you export and submit them separately.</p></div>
-            <Button type="submit" disabled={registrationMutation.isPending}>{registrationMutation.isPending ? <LoaderCircle className="spin" /> : null}{registrationMutation.isPending ? "Saving registration…" : registration ? "Update registration" : "Register and enter the Fieldbook"}{!registrationMutation.isPending ? <ArrowRight /> : null}</Button>
-          </form>
-        </DialogContent>
-      </Dialog>
-
       <footer>
         <div><strong>Dr. Vicki Bealman&apos;s Micro-Certification Fieldbook</strong><p>Independent instructional-design resource prepared for DeVry University curriculum and co-curricular consideration.</p></div>
-        <div><span>Research → Organize → Prototype → Refine → Evaluate</span><p>Fieldbook work is saved locally in the current browser. Keep confidential source files in approved institutional systems.</p><a className="admin-link" href="/admin/registrations">Administrator registration dashboard <ArrowRight /></a></div>
+        <div><span>Research → Organize → Prototype → Refine → Evaluate</span><p>Fieldbook work is saved locally in the current browser. Keep confidential source files in approved institutional systems.</p><a className="admin-link" href="/admin/registrations">Legacy registration dashboard <ArrowRight /></a></div>
       </footer>
     </div>
   );

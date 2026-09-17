@@ -172,7 +172,6 @@
   .header-progress i, .rail-progress i, .export-progress i { display: block; height: 100%; background: var(--gold); transition: width 260ms cubic-bezier(.23,1,.32,1); }
   .registration-button { min-height: 38px; display: inline-flex; align-items: center; gap: 8px; padding: 0 12px; border: 1px solid var(--gold); background: var(--gold); color: var(--navy); font: 750 10px "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
   .registration-button:hover { background: #e1b95d; }
-  .registration-button.registered { background: rgba(113,197,168,.12); border-color: #71c5a8; color: #b7ead8; }
   .registration-button svg { width: 16px; }
   .icon-button { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); color: white; }
   .icon-button:hover { border-color: var(--gold); color: var(--gold); }
@@ -187,9 +186,9 @@
   .hero-kicker svg { width: 16px; }
   .hero-copy h1 { max-width: 780px; margin: 20px 0 22px; font-size: clamp(3.3rem, 6.3vw, 6.8rem); line-height: .92; letter-spacing: -.055em; }
   .hero-copy > p { max-width: 720px; margin: 0; color: #d4dee9; font-size: clamp(1rem, 1.5vw, 1.24rem); line-height: 1.7; }
-  .hero-actions { display: flex; align-items: center; gap: 24px; margin-top: 34px; }
-  .hero-actions button:first-child { height: 50px; border-radius: 0; background: var(--gold); color: var(--navy); font-weight: 800; box-shadow: 8px 8px 0 rgba(255,255,255,.1); }
-  .hero-actions button:first-child:hover { background: #e1b95d; box-shadow: 4px 4px 0 rgba(255,255,255,.1); }
+  .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 24px; margin-top: 34px; }
+  .hero-actions > [data-slot="button"] { height: 50px; border-radius: 0; background: var(--gold); color: var(--navy); font-weight: 800; box-shadow: 8px 8px 0 rgba(255,255,255,.1); }
+  .hero-actions > [data-slot="button"]:hover { background: #e1b95d; box-shadow: 4px 4px 0 rgba(255,255,255,.1); }
   .hero-actions svg { width: 18px; }
   .text-action { display: inline-flex; align-items: center; gap: 6px; padding: 10px 0; border: 0; border-bottom: 1px solid var(--gold); background: transparent; color: white; font-weight: 700; }
   .hero-copy .hero-disclaimer { margin-top: 28px; max-width: 680px; color: #aebdcb; font: 11px/1.6 "IBM Plex Mono", monospace; }
@@ -226,29 +225,6 @@
   .instructor-welcome span { display: block; margin-bottom: 8px; color: var(--gold); font: 700 10px "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: .09em; }
   .instructor-welcome p { margin: 0; color: inherit; font-size: 14px; line-height: 1.7; }
 
-  .registration-dialog { gap: 0; background: var(--paper); color: var(--foreground); box-shadow: 0 28px 100px rgba(0,0,0,.45); }
-  .registration-dialog > [data-slot="dialog-header"] { gap: 12px; padding: 30px 34px 28px; background: var(--navy); color: white; text-align: left; }
-  .registration-dialog [data-slot="dialog-title"] { font: 600 clamp(2rem, 5vw, 3.2rem)/1 "Fraunces", serif; letter-spacing: -.04em; }
-  .registration-dialog [data-slot="dialog-description"] { max-width: 520px; color: #c5d1dd; font-size: 14px; line-height: 1.65; }
-  .registration-dialog [data-slot="dialog-close"] { top: 18px; right: 18px; color: white; }
-  .registration-eyebrow { display: flex; align-items: center; gap: 8px; color: var(--gold); font: 700 10px "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: .09em; }
-  .registration-eyebrow svg { width: 16px; }
-  .registration-form { display: grid; gap: 17px; padding: 28px 34px 34px; }
-  .registration-form label { display: grid; gap: 7px; }
-  .registration-form label > span { font: 700 10px "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: .06em; color: var(--muted-foreground); }
-  .registration-form input { width: 100%; min-height: 47px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 0; background: var(--surface); color: var(--foreground); font-size: 15px; }
-  .registration-form input[readonly] { color: var(--muted-foreground); background: var(--paper-deep); cursor: not-allowed; }
-  .registration-form input:focus { border-color: var(--gold-deep); outline: 3px solid color-mix(in srgb, var(--gold) 24%, transparent); outline-offset: 1px; }
-  .registration-field-note { color: var(--muted-foreground); font-size: 10px; line-height: 1.45; }
-  .registration-form > button { min-height: 49px; border-radius: 0; background: var(--gold); color: var(--navy); font-weight: 800; }
-  .registration-form > button:hover { background: #e1b95d; }
-  .registration-consent { display: grid !important; grid-template-columns: 20px 1fr; align-items: start; gap: 10px !important; padding: 3px 0; }
-  .registration-consent input { width: 18px !important; height: 18px; min-height: 18px !important; margin-top: 2px; accent-color: var(--gold-deep); }
-  .registration-consent > span { color: var(--foreground) !important; font: 500 11px/1.55 "Manrope", sans-serif !important; text-transform: none !important; letter-spacing: 0 !important; }
-  .registration-privacy { display: grid; grid-template-columns: 22px 1fr; gap: 10px; padding: 13px; background: var(--surface); border-left: 3px solid var(--gold); }
-  .registration-privacy svg { width: 19px; color: var(--success); }
-  .registration-privacy p { margin: 0; color: var(--muted-foreground); font-size: 11px; line-height: 1.55; }
-  .registration-privacy strong { color: var(--foreground); }
   .spin { animation: spin .8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -658,8 +634,6 @@
   .dashboard-stats { grid-template-columns: 1fr; }
   .dashboard-stats article { min-height: 108px; }
   .roster-toolbar { padding: 22px 18px; }
-  .registration-dialog > [data-slot="dialog-header"] { padding: 26px 22px 22px; }
-  .registration-form { padding: 22px; }
   .hero-copy { margin-bottom: 170px; }
   .hero-ledger small { font-size: 8px; }
   .studio-image { height: 200px; }

@@ -134,3 +134,15 @@ A local-only completed learner state was prepared with participant **Alex Morgan
 The participant-facing export generated `alex-morgan-microcert-proposal-dossier.pdf` as a valid 15-page US Letter document. Cover text extraction confirmed **Alex Morgan**, **Student Affairs and Co-Curricular Learning**, and **September 20, 2026**. The completion date was correctly derived from the latest of the twelve completed lesson timestamps rather than from the PDF generation time. Visual review confirmed a prominent participant-name treatment, paired completion-date and pathway panels, proposal title, generated timestamp, and Dr. Bealman’s signature card without overlap or clipping.
 
 The local cover-validation participant and lesson data were removed after inspection. Reloading the public course confirmed the final delivery state opens unregistered at 0/12 with the normal registration controls. The temporary PDF was removed from the sandbox downloads directory.
+
+## Microsoft Forms registration and static-companion retirement
+
+The live application’s registration entry points now open the supplied Microsoft Forms URL in a new tab. The prior in-app registration dialog, browser registration flag, required-access gate, tRPC registration mutation, and related modal styling were removed. Module Studios, Notebook, Visuals, and Proposal Dossier remain directly accessible; the authenticated dashboard is labeled as a legacy roster for records collected before this transition.
+
+Desktop and 390 × 844 mobile screenshots confirmed that the header Register control and hero **Register to begin** action retain the Fieldbook’s gold treatment. The separate **Begin module studio 1** and **Preview the proposal dossier** actions remain visible and responsive. The three-action desktop group wraps cleanly, while mobile stacks the actions with no clipping or horizontal overflow.
+
+The retired GitHub Pages `/docs` package, `GITHUB_PAGES.md`, `PAGES_VALIDATION.md`, the one-purpose `scripts/validate-github-pages.mjs`, and the `pages:check` package command were removed. Repository checks confirmed that neither `/docs` nor `/scripts` remains and that no Pages-validator or old registration-dialog source references remain.
+
+Browser inspection confirmed that both visible registration anchors resolve to the exact Microsoft Forms response URL supplied by the user. Selecting **Module Studios** from a fresh 0/12 session opened `?view=course` immediately, rendered Lesson 01 and the full field notebook workspace, and did not open an internal registration dialog or require a browser registration record.
+
+The Microsoft Forms destination returned HTTP 200. The final technical run passed all eight Vitest checks, TypeScript validation, the production build, `git diff --check`, obsolete-reference scans, and deletion assertions for `/docs` and `/scripts`. The production build retained only the existing nonblocking large-chunk advisory.
