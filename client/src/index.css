@@ -205,6 +205,20 @@
   .compact-list li { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; font-weight: 650; }
   .compact-list svg { width: 18px; color: var(--success); flex: 0 0 auto; }
 
+  .instructor-section { display: grid; grid-template-columns: minmax(260px, .72fr) 1.28fr; gap: 72px; align-items: center; padding-bottom: 110px; }
+  .instructor-portrait { position: relative; width: min(100%, 430px); justify-self: center; aspect-ratio: 1; padding: 15px; background: var(--navy); border: 1px solid var(--gold); box-shadow: 18px 18px 0 var(--paper-deep); }
+  .instructor-portrait::before, .instructor-portrait::after { content: ""; position: absolute; width: 34px; height: 34px; border-color: var(--gold); }
+  .instructor-portrait::before { top: -8px; left: -8px; border-top: 2px solid; border-left: 2px solid; }
+  .instructor-portrait::after { right: -8px; bottom: -8px; border-right: 2px solid; border-bottom: 2px solid; }
+  .instructor-portrait img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+  .instructor-portrait > span { position: absolute; right: 20px; bottom: 20px; width: 58px; height: 58px; display: grid; place-items: center; color: var(--navy); background: var(--gold); border-radius: 50%; font: 700 15px "IBM Plex Mono", monospace; border: 4px solid var(--navy); }
+  .instructor-copy h2 { margin: 8px 0 18px; font-size: clamp(3rem, 5.5vw, 5.7rem); line-height: .95; letter-spacing: -.05em; }
+  .instructor-copy > p { max-width: 770px; color: var(--muted-foreground); font-size: 17px; line-height: 1.8; }
+  .instructor-copy blockquote { max-width: 700px; margin: 28px 0; padding: 20px 0 20px 25px; color: var(--foreground); border-left: 3px solid var(--gold); font: 600 25px/1.4 "Fraunces", serif; }
+  .instructor-signature { display: inline-grid; gap: 2px; margin-top: 6px; padding: 16px 42px 9px 0; border-bottom: 1px solid var(--gold-deep); transform: rotate(-1deg); }
+  .instructor-signature strong { font: 600 27px "Fraunces", serif; font-style: italic; color: var(--gold-deep); }
+  .instructor-signature small { font: 600 8px "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: .1em; color: var(--muted-foreground); }
+
   .method-band { padding-block: 84px; background: var(--navy); color: white; position: relative; }
   .method-band::before { content: ""; position: absolute; inset: 0; opacity: .18; background-image: linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px); background-size: 40px 40px; }
   .method-grid { position: relative; display: grid; grid-template-columns: 1.1fr .75fr; gap: 70px; }
@@ -502,6 +516,9 @@
   .hero-ledger div { padding: 14px 16px; }
   .intro-section { grid-template-columns: 1fr; gap: 25px; padding-block: 76px; }
   .intro-aside { grid-column: auto; }
+  .instructor-section { grid-template-columns: 1fr; gap: 42px; padding-bottom: 76px; }
+  .instructor-portrait { width: min(82vw, 410px); }
+  .instructor-copy { text-align: left; }
   .method-grid { grid-template-columns: 1fr; gap: 20px; }
   .method-steps { grid-template-columns: 1fr; }
   .method-steps div { min-height: auto; grid-template-columns: 40px 1fr; padding: 16px; border-bottom: 1px solid rgba(255,255,255,.14); }

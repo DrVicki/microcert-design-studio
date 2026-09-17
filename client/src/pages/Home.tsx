@@ -125,11 +125,11 @@ function downloadFile(filename: string, content: string, type = "text/plain;char
 }
 
 function lessonFile(lesson: Lesson, entry: WorkEntry, state: CourseState) {
-  return `MICRO-CERTIFICATION DESIGN STUDIO\nModule Studio ${lesson.module} · Lesson ${String(lesson.number).padStart(2, "0")}\n\nLEARNER\nName: ${state.learnerName || "Not entered"}\nRole / unit: ${state.roleUnit || "Not entered"}\nProposal title: ${state.proposalTitle || "Not entered"}\nPathway: ${state.pathway}\n\nLESSON\n${lesson.title}\nObjective: ${lesson.objective}\nStatus: ${entry.completed ? "Complete" : "In progress"}\nCompleted: ${entry.completedAt ? new Date(entry.completedAt).toLocaleString() : "—"}\n\nFIELD NOTES\n${entry.notes || "No notes entered."}\n\nDESIGN ARTIFACT\n${entry.artifact || "No artifact summary entered."}\n\nCOMPLETION EVIDENCE\n${entry.evidence || "No evidence entered."}\n\nREFLECTION\nQuestion: ${lesson.reflection}\nResponse: ${entry.reflection || "No reflection entered."}\n\nAPPLIED CHECK\n${lesson.appliedCheck.map((item, index) => `${entry.checks[index] ? "[x]" : "[ ]"} ${item}`).join("\n")}\n\nDELIVERABLE\n${lesson.deliverable}\n\nSOURCE NOTES\n${lesson.sourceIds.map(id => { const source = sources.find(item => item.id === id); return source ? `[${id}] ${source.title} — ${source.url}` : id; }).join("\n")}\n\nPRIVACY REMINDER\n${privacyReminder}\n\nThis file is upload-ready for a manually configured LMS assignment. It does not create a direct LMS integration or constitute institutional approval.\n`;
+  return `DR. VICKI BEALMAN'S MICRO-CERTIFICATION FIELDBOOK\nMicro-Certification Design Studio\nCourse author and instructor: Dr. Vicki Bealman\nModule Studio ${lesson.module} · Lesson ${String(lesson.number).padStart(2, "0")}\n\nLEARNER\nName: ${state.learnerName || "Not entered"}\nRole / unit: ${state.roleUnit || "Not entered"}\nProposal title: ${state.proposalTitle || "Not entered"}\nPathway: ${state.pathway}\n\nLESSON\n${lesson.title}\nObjective: ${lesson.objective}\nStatus: ${entry.completed ? "Complete" : "In progress"}\nCompleted: ${entry.completedAt ? new Date(entry.completedAt).toLocaleString() : "—"}\n\nFIELD NOTES\n${entry.notes || "No notes entered."}\n\nDESIGN ARTIFACT\n${entry.artifact || "No artifact summary entered."}\n\nCOMPLETION EVIDENCE\n${entry.evidence || "No evidence entered."}\n\nREFLECTION\nQuestion: ${lesson.reflection}\nResponse: ${entry.reflection || "No reflection entered."}\n\nAPPLIED CHECK\n${lesson.appliedCheck.map((item, index) => `${entry.checks[index] ? "[x]" : "[ ]"} ${item}`).join("\n")}\n\nDELIVERABLE\n${lesson.deliverable}\n\nSOURCE NOTES\n${lesson.sourceIds.map(id => { const source = sources.find(item => item.id === id); return source ? `[${id}] ${source.title} — ${source.url}` : id; }).join("\n")}\n\nPRIVACY REMINDER\n${privacyReminder}\n\nThis file is upload-ready for a manually configured LMS assignment. It does not create a direct LMS integration or constitute institutional approval.\n`;
 }
 
 function dossierFile(state: CourseState) {
-  const header = `# Micro-Certification Proposal Dossier\n\n**Prepared by:** ${state.learnerName || "Not entered"}  \n**Role / unit:** ${state.roleUnit || "Not entered"}  \n**Working proposal title:** ${state.proposalTitle || "Not entered"}  \n**Proposed pathway:** ${state.pathway}  \n**Generated:** ${new Date().toLocaleString()}\n\n> This dossier is prepared for consideration. It does not represent DeVry University approval, a formal institutional workflow, academic credit, accreditation, or a credential issuance decision.\n\n## Executive dossier map\n\n${capstoneSections.map((item, index) => `${index + 1}. ${item}`).join("\n")}\n`;
+  const header = `# Micro-Certification Proposal Dossier\n\n**Fieldbook:** Dr. Vicki Bealman's Micro-Certification Fieldbook  \n**Course author and instructor:** Dr. Vicki Bealman  \n**Prepared by:** ${state.learnerName || "Not entered"}  \n**Role / unit:** ${state.roleUnit || "Not entered"}  \n**Working proposal title:** ${state.proposalTitle || "Not entered"}  \n**Proposed pathway:** ${state.pathway}  \n**Generated:** ${new Date().toLocaleString()}\n\n> This proposal dossier is prepared for consideration. It does not represent DeVry University approval, a formal institutional workflow, academic credit, accreditation, or a credential issuance decision.\n\n## Executive proposal dossier map\n\n${capstoneSections.map((item, index) => `${index + 1}. ${item}`).join("\n")}\n`;
   const body = lessons.map(lesson => {
     const entry = state.work[lesson.id];
     return `\n---\n\n## ${String(lesson.number).padStart(2, "0")} · ${lesson.title}\n\n**Module Studio ${lesson.module}:** ${studios.find(studio => studio.id === lesson.studioId)?.title}  \n**Objective:** ${lesson.objective}  \n**Status:** ${entry.completed ? `Complete${entry.completedAt ? ` · ${new Date(entry.completedAt).toLocaleDateString()}` : ""}` : "In progress"}\n\n### Design artifact\n\n${entry.artifact || "_Not entered._"}\n\n### Evidence and open questions\n\n${entry.evidence || "_Not entered._"}\n\n### Reflection and design judgment\n\n**${lesson.reflection}**\n\n${entry.reflection || "_Not entered._"}\n\n### Working notes\n\n${entry.notes || "_No additional notes._"}\n\n### Applied check\n\n${lesson.appliedCheck.map((item, index) => `- ${entry.checks[index] ? "[x]" : "[ ]"} ${item}`).join("\n")}\n`;
@@ -140,7 +140,7 @@ function dossierFile(state: CourseState) {
 
 function certificateFile(state: CourseState) {
   const issued = new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
-  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Course Completion — ${state.learnerName || "Learner"}</title><style>@page{size:landscape;margin:0}*{box-sizing:border-box}body{margin:0;background:#0b1b31;color:#0b1b31;font-family:Arial,sans-serif}.page{width:11in;height:8.5in;margin:auto;padding:.45in;background:#efe6d3}.frame{height:100%;border:4px solid #0b1b31;outline:1px solid #b88a2e;outline-offset:-16px;padding:.75in;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative}.eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:#80601e}.mark{width:82px;height:82px;border-radius:50%;display:grid;place-items:center;background:#b88a2e;color:white;font-size:36px;margin:24px}h1{font-family:Georgia,serif;font-size:46px;margin:0 0 16px}.name{font-family:Georgia,serif;font-size:34px;border-bottom:1px solid #b88a2e;padding:0 30px 8px;margin:10px}.copy{max-width:720px;font-size:17px;line-height:1.6}.details{display:flex;gap:48px;margin-top:28px;font-size:13px}.note{position:absolute;bottom:24px;left:56px;right:56px;font-size:9px;color:#59616d}@media print{body{background:white}.page{margin:0}}</style></head><body><main class="page"><section class="frame"><div class="eyebrow">Certificate of course completion</div><div class="mark">✓</div><h1>Micro-Certification Design Studio</h1><p class="copy">This acknowledges that</p><div class="name">${state.learnerName || "Learner name"}</div><p class="copy">completed all twelve applied lessons and assembled a proposal dossier for <strong>${state.proposalTitle || "a proposed micro-certification"}</strong>.</p><div class="details"><span>${issued}</span><span>${state.pathway} pathway</span><span>12 / 12 lessons</span></div><p class="note">This is a local certificate of completion for this professional-learning design studio. It is not a DeVry University credential, approval, academic credit, accreditation, or authorization to issue a micro-certification.</p></section></main></body></html>`;
+  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Course Completion — ${state.learnerName || "Learner"}</title><style>@page{size:landscape;margin:0}*{box-sizing:border-box}body{margin:0;background:#0b1b31;color:#0b1b31;font-family:Arial,sans-serif}.page{width:11in;height:8.5in;margin:auto;padding:.45in;background:#efe6d3}.frame{height:100%;border:4px solid #0b1b31;outline:1px solid #b88a2e;outline-offset:-16px;padding:.65in;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative}.eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:#80601e}.mark{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;background:#b88a2e;color:white;font-size:32px;margin:18px}.fieldbook{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#80601e;margin-bottom:8px}h1{font-family:Georgia,serif;font-size:44px;margin:0 0 14px}.name{font-family:Georgia,serif;font-size:34px;border-bottom:1px solid #b88a2e;padding:0 30px 8px;margin:8px}.copy{max-width:720px;font-size:16px;line-height:1.55}.instructor{margin-top:14px;font-family:Georgia,serif;font-size:17px;color:#80601e}.details{display:flex;gap:48px;margin-top:20px;font-size:13px}.note{position:absolute;bottom:22px;left:56px;right:56px;font-size:9px;color:#59616d}@media print{body{background:white}.page{margin:0}}</style></head><body><main class="page"><section class="frame"><div class="eyebrow">Certificate of course completion</div><div class="mark">✓</div><div class="fieldbook">Dr. Vicki Bealman's Micro-Certification Fieldbook</div><h1>Micro-Certification Design Studio</h1><p class="copy">This acknowledges that</p><div class="name">${state.learnerName || "Learner name"}</div><p class="copy">completed all twelve applied lessons and assembled a proposal dossier for <strong>${state.proposalTitle || "a proposed micro-certification"}</strong>.</p><div class="instructor">Course author and instructor · Dr. Vicki Bealman</div><div class="details"><span>${issued}</span><span>${state.pathway} pathway</span><span>12 / 12 lessons</span></div><p class="note">This is a local certificate of completion for this professional-learning design studio. It is not a DeVry University credential, approval, academic credit, accreditation, or authorization to issue a micro-certification.</p></section></main></body></html>`;
 }
 
 export default function Home() {
@@ -255,7 +255,7 @@ export default function Home() {
         <nav className="desktop-nav" aria-label="Primary navigation">
           {(["overview", "course", "notebook", "visuals", "dossier"] as Section[]).map(item => (
             <button key={item} className={section === item ? "active" : ""} onClick={() => navigateTo(item)}>
-              {item === "course" ? "Module studios" : item}
+              {item === "course" ? "Module studios" : item === "dossier" ? "Proposal dossier" : item}
             </button>
           ))}
         </nav>
@@ -273,7 +273,7 @@ export default function Home() {
         {mobileMenu && (
           <nav className="mobile-nav" aria-label="Mobile navigation">
             {(["overview", "course", "notebook", "visuals", "dossier"] as Section[]).map(item => (
-              <button key={item} onClick={() => navigateTo(item)}>{item === "course" ? "Module studios" : item}</button>
+              <button key={item} onClick={() => navigateTo(item)}>{item === "course" ? "Module studios" : item === "dossier" ? "Proposal dossier" : item}</button>
             ))}
           </nav>
         )}
@@ -286,12 +286,12 @@ export default function Home() {
               <img src="/manus-storage/hero-fieldbook_17c51be2.png" alt="Curriculum fieldbook with competency cards, assessment grids, compass, and credential seal" />
               <div className="hero-scrim" />
               <div className="hero-copy">
-                <span className="hero-kicker"><Sparkles /> Build a proposal reviewers can inspect</span>
+                <span className="hero-kicker"><Sparkles /> Build a Co-Curricular Experience Proposal for Review &amp; Implementation.</span>
                 <h1>Design a micro-certification that earns the next conversation.</h1>
                 <p>Research the need. Architect the evidence. Prototype the experience. Package a decision-ready dossier for DeVry University curriculum or co-curricular consideration.</p>
                 <div className="hero-actions">
                   <Button size="lg" onClick={startCourse}>{completedCount ? "Resume the studio" : "Begin module studio 1"}<ArrowRight /></Button>
-                  <button className="text-action" onClick={() => navigateTo("dossier")}>Preview the final dossier <ChevronRight /></button>
+                  <button className="text-action" onClick={() => navigateTo("dossier")}>Preview the proposal dossier <ChevronRight /></button>
                 </div>
                 <p className="hero-disclaimer">Independent professional-learning resource. Not an official DeVry course, policy, approval workflow, or credential.</p>
               </div>
@@ -320,10 +320,27 @@ export default function Home() {
               </div>
             </section>
 
+            <section className="instructor-section content-frame" aria-labelledby="instructor-title">
+              <div className="instructor-portrait">
+                <img src="/manus-storage/imageedit_7_3029739368_d76d8b4a.png" alt="Portrait of Dr. Vicki Bealman" />
+                <span aria-hidden="true">VB</span>
+              </div>
+              <div className="instructor-copy">
+                <span className="section-index">02 / Your instructor</span>
+                <span className="mono-label">Course author · fieldbook guide</span>
+                <h2 id="instructor-title">Dr. Vicki Bealman</h2>
+                <p>Dr. Bealman guides this design studio as an evidence-led working session. Her fieldbook structure helps instructional designers turn an initial co-curricular concept into a bounded learner promise, a testable experience, and a proposal dossier prepared for responsible review and implementation planning.</p>
+                <blockquote>“Make the decision easy to inspect—even when the answer is not yet yes.”</blockquote>
+                <div className="instructor-signature" aria-label="Dr. Vicki Bealman, course author and instructor">
+                  <strong>Dr. Vicki Bealman</strong><small>Micro-Certification Fieldbook</small>
+                </div>
+              </div>
+            </section>
+
             <section className="method-band">
               <div className="content-frame method-grid">
                 <div>
-                  <span className="section-index light">02 / Working method</span>
+                  <span className="section-index light">03 / Working method</span>
                   <h2>Learn → build → test → decide</h2>
                 </div>
                 <p>Every module studio combines a concise reading, three design moves, one authentic activity, an applied readiness check, a notebook artifact, and a project milestone.</p>
@@ -337,7 +354,7 @@ export default function Home() {
 
             <section className="studio-section content-frame">
               <div className="section-heading-row">
-                <div><span className="section-index">03 / Module studios</span><h2>Four studios. One continuous dossier.</h2></div>
+                <div><span className="section-index">04 / Module studios</span><h2>Four studios. One continuous proposal dossier.</h2></div>
                 <p>Later lessons stay visibly locked until the current applied work is complete. Finished lessons remain editable without losing their completion record.</p>
               </div>
               <div className="studio-grid">
@@ -377,7 +394,7 @@ export default function Home() {
 
             <section className="source-section content-frame">
               <div className="section-heading-row">
-                <div><span className="section-index">04 / Evidence base</span><h2>Built on external standards, not invented policy.</h2></div>
+                <div><span className="section-index">05 / Evidence base</span><h2>Built on external standards, not invented policy.</h2></div>
                 <p>Institutional decisions still require authorized DeVry review. These public sources provide context and design references—not approval.</p>
               </div>
               <div className="source-grid">
@@ -527,7 +544,7 @@ export default function Home() {
               <div className="notebook-stat"><span>{completedCount}</span><small>artifacts marked complete</small></div>
             </div>
             <div className="identity-card">
-              <div className="identity-heading"><span className="mono-label">Dossier identity</span><p>These fields appear in lesson downloads, the combined dossier, and the local completion certificate.</p></div>
+              <div className="identity-heading"><span className="mono-label">Proposal dossier identity</span><p>These fields appear in lesson downloads, the combined proposal dossier, and the local completion certificate.</p></div>
               <div className="identity-grid">
                 <label><span>Your name</span><input value={state.learnerName} onChange={event => setState(current => ({ ...current, learnerName: event.target.value }))} placeholder="Full name" /></label>
                 <label><span>Role / unit</span><input value={state.roleUnit} onChange={event => setState(current => ({ ...current, roleUnit: event.target.value }))} placeholder="Instructional designer, college, team…" /></label>
@@ -571,13 +588,13 @@ export default function Home() {
         {section === "dossier" && (
           <section className="utility-page dossier-page content-frame">
             <div className="utility-hero">
-              <div><span className="section-index">Capstone + completion</span><h1>Assemble the decision-ready dossier.</h1><p>The combined Markdown export is structured for review and manual transfer into a document, project space, or LMS assignment.</p></div>
+              <div><span className="section-index">Proposal dossier + completion</span><h1>Assemble the decision-ready proposal dossier.</h1><p>The combined Markdown export is structured for review and manual transfer into a document, project space, or LMS assignment.</p></div>
               <div className={`dossier-seal ${allComplete ? "ready" : ""}`}><BadgeCheck /><span>{allComplete ? "Ready" : `${progress}%`}</span><small>{allComplete ? "for export" : "course progress"}</small></div>
             </div>
             <div className="dossier-grid">
               <div className="dossier-main">
                 <section className="dossier-card">
-                  <span className="mono-label">Submission architecture</span>
+                  <span className="mono-label">Proposal dossier architecture</span>
                   <h2>Nine sections, traced to twelve artifacts.</h2>
                   <ol className="capstone-list">{capstoneSections.map((item, index) => <li key={item}><span>{String(index + 1).padStart(2, "0")}</span><p>{item}</p></li>)}</ol>
                 </section>
@@ -595,7 +612,7 @@ export default function Home() {
               </div>
               <aside className="export-panel">
                 <span className="mono-label">Export desk</span>
-                <h2>{allComplete ? "Your dossier is ready." : `${lessons.length - completedCount} lessons remain.`}</h2>
+                <h2>{allComplete ? "Your proposal dossier is ready." : `${lessons.length - completedCount} lessons remain.`}</h2>
                 <p>Exports contain your own entries plus the relevant prompts, checks, source notes, privacy warning, and status.</p>
                 <div className="export-progress"><div><i style={{ width: `${progress}%` }} /></div><span>{progress}%</span></div>
                 <button disabled={!allComplete || !profileComplete} onClick={() => downloadFile(`${safeName(state.learnerName)}-microcert-proposal-dossier.md`, dossierFile(state), "text/markdown;charset=utf-8")}><FileArchive /> Download proposal dossier</button>
@@ -610,7 +627,7 @@ export default function Home() {
       </main>
 
       <footer>
-        <div><strong>Micro-Certification Design Studio</strong><p>Independent instructional-design resource prepared for DeVry University curriculum and co-curricular consideration.</p></div>
+        <div><strong>Dr. Vicki Bealman&apos;s Micro-Certification Fieldbook</strong><p>Independent instructional-design resource prepared for DeVry University curriculum and co-curricular consideration.</p></div>
         <div><span>Research → Organize → Prototype → Refine → Evaluate</span><p>Work is saved locally in the current browser. Keep confidential source files in approved institutional systems.</p></div>
       </footer>
     </div>

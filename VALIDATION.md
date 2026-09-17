@@ -80,3 +80,9 @@ All validation-only learner data and the temporary dark-theme preference were re
 ## Acceptance summary
 
 The implemented course meets the requested structure: four **module studios**, twelve substantive lessons, action assignments instead of quizzes, per-lesson applied checks, an overall progress tracker, persistent notebooks, three milestone projects plus a capstone, standalone visualizations, downloadable lesson submissions, a combined proposal dossier, and a learner-name-personalized completion certificate unlocked only at 100 percent. The application opens in a clean learner state and contains no seeded learner records.
+
+## Instructor profile and attribution update
+
+The hero process line now reads **“Build a Co-Curricular Experience Proposal for Review & Implementation.”** The supplied Dr. Bealman portrait renders successfully in a dedicated responsive instructor profile on desktop and mobile, paired with a typographic signature mark. The profile is limited to her role in this course and does not invent an institutional title, biography, or additional credential.
+
+The primary and mobile navigation now use **Proposal Dossier**. The dossier landing view, identity panel, architecture label, preview action, and completion language use the same term. Generated-file interception confirmed that the combined proposal dossier contains both **Dr. Vicki Bealman's Micro-Certification Fieldbook** and the line **Course author and instructor: Dr. Vicki Bealman**. The personalized certificate contains the same fieldbook attribution plus **Course author and instructor · Dr. Vicki Bealman** and retains the learner name. Desktop and 390-pixel mobile captures show no clipping in the instructor profile or proposal sections.
